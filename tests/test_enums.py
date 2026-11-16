@@ -36,7 +36,6 @@ def test_penalty_fields_major_and_double_minor():
 
 def test_penalty_fields_unmappable():
     assert penalty_fields("Being Too Handsome", 2) is None
-    assert penalty_fields("10 Minute Misconduct", 10) is None
     assert penalty_fields("Penalty Shot", 0) is None
 
 
@@ -51,3 +50,11 @@ def test_periods_cover_overtime():
 )
 def test_point_type(strength, expected):
     assert point_type(strength) == expected
+
+
+def test_penalty_fields_misconduct_has_no_type():  # the website sends no type for a plain misconduct
+    assert penalty_fields("10 Minute Misconduct", 10) == {"kind": "Misconduct", "duration": "Ten"}
+
+
+def test_penalty_fields_bench_minor():
+    assert penalty_fields("Too Many Players", 2, bench=True) == {"kind": "Too Many Men", "duration": "Two", "type": "BenchMinor"}

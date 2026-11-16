@@ -186,10 +186,20 @@ def test_unknown_penalty_kind_is_warning(ctx, box):
     assert r.status is Status.SYNCED_WITH_WARNINGS and any("Being Too Handsome" in w for w in r.warnings)
 
 
-def test_bench_penalty_is_warning(ctx, box):
-    r = sync_game(ctx, replace(box, penalties=(replace(box.penalties[0], player=None),)), [EVENT])
-    assert "create_penalty" not in ctx.client.names()
-    assert any("bench" in w for w in r.warnings)
+def test_bench_penalty_entered_for_the_bench(ctx, box):
+    bench = replace(box.penalties[0], player=None, kind="Too Many Players")
+    r = sync_game(ctx, replace(box, penalties=(bench,)), [EVENT])
+    (penalty,) = calls(ctx, "create_penalty")
+    assert penalty[2:7] == (MOOSE_BA, "Away", "Two", "11:07", None)
+    assert penalty[7] == {"kind": "Too Many Men", "duration": "Two", "type": "BenchMinor"}
+    assert r.status is Status.SYNCED
+
+
+def test_misconduct_entered_without_type(ctx, box):
+    misconduct = replace(box.penalties[0], kind="10 Minute Misconduct", minutes=10)
+    sync_game(ctx, replace(box, penalties=(misconduct,)), [EVENT])
+    (penalty,) = calls(ctx, "create_penalty")
+    assert penalty[7] == {"kind": "Misconduct", "duration": "Ten"}
 
 
 def test_goalie_failure_is_warning(ctx, box):

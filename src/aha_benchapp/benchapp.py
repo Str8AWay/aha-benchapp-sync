@@ -95,11 +95,11 @@ class BenchAppClient:
         }})
 
     def create_penalty(self, event_id: int, season_id: int, team_id: int, home_away: str, period: str, time: str,
-                       player_id: int, fields: dict[str, str]) -> int:
+                       player_id: int | None, fields: dict[str, str]) -> int:
+        """`player_id` None is a bench penalty; `fields` may omit "type" (plain misconducts have none)."""
         return self._created("scorekeeperCreateEventPenalty", "createEventPenalty", {"input": {
-            "duration": fields["duration"], "eventId": event_id, "homeAway": home_away, "kind": fields["kind"],
-            "period": period, "playerId": player_id, "seasonId": season_id, "teamId": team_id,
-            "time": time, "type": fields["type"],
+            "eventId": event_id, "homeAway": home_away, "period": period, "playerId": player_id,
+            "seasonId": season_id, "teamId": team_id, "time": time, **fields,
         }})
 
     def create_shot(self, event_id: int, team_id: int, period: str) -> int:

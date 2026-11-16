@@ -54,17 +54,27 @@ _TYPES_BY_MINUTES = {2: "Minor", 4: "DoubleMinor", 5: "Major"}
 _POINT_TYPES = {"PP": "PowerPlay", "SH": "ShortHanded", "EN": "EmptyNet"}
 
 
-def penalty_fields(kind: str, minutes: int) -> dict[str, str] | None:
-    """BenchApp's kind/duration/type for an AHA penalty, or None if it has no equivalent."""
+def penalty_fields(kind: str, minutes: int, *, bench: bool = False) -> dict[str, str] | None:
+    """BenchApp's kind/duration/type for an AHA penalty, or None if it has no equivalent.
+
+    A plain misconduct has no BenchApp type, so (like the website) none is sent.
+    """
     benchapp_kind = PENALTY_KINDS.get(_normalize(kind))
     duration = _DURATIONS.get(minutes)
-    if benchapp_kind == "Game Misconduct":
+    if benchapp_kind is None or duration is None:
+        return None
+    fields = {"kind": benchapp_kind, "duration": duration}
+    if benchapp_kind == "Misconduct":
+        return fields
+    if bench:
+        penalty_type = "BenchMinor"
+    elif benchapp_kind == "Game Misconduct":
         penalty_type = "GameMisconduct"
     else:
         penalty_type = _TYPES_BY_MINUTES.get(minutes)
-    if benchapp_kind is None or duration is None or penalty_type is None:
+    if penalty_type is None:
         return None
-    return {"kind": benchapp_kind, "duration": duration, "type": penalty_type}
+    return {**fields, "type": penalty_type}
 
 
 def point_type(strength: str) -> str:

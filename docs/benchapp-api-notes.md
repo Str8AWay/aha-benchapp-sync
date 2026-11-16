@@ -55,3 +55,5 @@ The new object's ID is at `data.<mutation field>.id`. For `createRosterPlayer`, 
 - **Penalty `type`:** `Minor`, `DoubleMinor`, `Major`, `GameMisconduct`, `BenchMinor`.
 - **Penalty `duration`:** `One`, `OnePointFive`, `Two`, `TwoPointFive`, `Three`, `ThreePointFive`, `Four`, `Five`, `Six`, `Seven`, `Ten`, `Twenty`, `TwentyFive`, `PenaltyShot`, `Game`, `Match`.
 - **Penalty `kind`:** free text, sent as the name from BenchApp's 42-entry ice hockey catalog ("Hooking", "High-Sticking", …). It's mirrored in `src/aha_benchapp/enums.py`.
+- **Plain misconduct:** kind `Misconduct`, duration `Ten`, and **no `type`**. The form maps its type through the enum, and that returns `undefined` for "Misconduct", so the key is dropped.
+- **Bench penalty:** the player picker's "Bench" option sends `playerId: null` with type `BenchMinor` (`Ge(null)` sets `'BENCH-MINOR'`). The penalty list shows "Bench" when `playerId` is null and the type is a bench minor.

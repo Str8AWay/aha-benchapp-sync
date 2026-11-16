@@ -181,3 +181,11 @@ def test_dry_run_mutations_send_nothing(http, dry_client):
 def test_dry_run_still_reads(http, dry_client):
     http.reply(json.loads(fixture("ba_game_sheet.json")))
     assert dry_client.game_sheet(3766427)["homeTeam"]["team"]["id"] == 1247980
+
+
+def test_create_bench_misconduct_omits_type_and_player(http, client):
+    http.reply({"data": {"createEventPenalty": {"id": 6}}})
+    client.create_penalty(1, 2, 3, "Home", "Three", "04:33", None, {"kind": "Misconduct", "duration": "Ten"})
+    sent = http.sent()["variables"]["input"]
+    assert sent["playerId"] is None
+    assert "type" not in sent and sent["kind"] == "Misconduct" and sent["duration"] == "Ten"

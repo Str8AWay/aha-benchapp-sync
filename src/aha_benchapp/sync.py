@@ -221,16 +221,15 @@ class _GameSync:
     def _write_penalties(self) -> None:
         for penalty in self.box.penalties:
             label = f"penalty '{penalty.kind}' ({penalty.minutes} min)"
-            fields = enums.penalty_fields(penalty.kind, penalty.minutes)
-            if penalty.player is None:
-                self.result.warnings.append(f"{label} was a bench penalty; skipped")
-            elif fields is None:
+            fields = enums.penalty_fields(penalty.kind, penalty.minutes, bench=penalty.player is None)
+            if fields is None:
                 self.result.warnings.append(f"{label} has no BenchApp equivalent; skipped")
-            else:
-                side = self.sides[penalty.team]
-                self._best_effort(label, lambda: self.client.create_penalty(
-                    self.event["id"], self.season_id, side.team_id, side.home_away, enums.PERIOD[penalty.period],
-                    penalty.time, self._id(penalty.team, penalty.player), fields))
+                continue
+            side = self.sides[penalty.team]
+            player_id = None if penalty.player is None else self._id(penalty.team, penalty.player)
+            self._best_effort(label, lambda: self.client.create_penalty(
+                self.event["id"], self.season_id, side.team_id, side.home_away, enums.PERIOD[penalty.period],
+                penalty.time, player_id, fields))
 
     def _write_shots(self) -> None:
         if not self.box.shots:
