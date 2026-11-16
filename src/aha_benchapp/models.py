@@ -24,12 +24,13 @@ class Goal:
     time: str
     scorer: AhaPlayer
     assists: tuple[AhaPlayer, ...]
+    strength: str = ""  # AHA's tag: "", "PP", "SH", "EN", "PP EN"
 
 
 @dataclass(frozen=True)
 class Penalty:
     team: str
-    player: AhaPlayer
+    player: AhaPlayer | None  # None for bench penalties
     kind: str
     period: Period
     minutes: int
