@@ -1,0 +1,86 @@
+query scorekeeperRostersPage($eventId: Int!) {
+  gameSheet(eventId: $eventId, includeAllPlayers: true) {
+    event {
+      id
+      type
+      leagueId
+      canScorekeep
+      homeTeam {
+        id
+        name
+        sport
+        __typename
+      }
+      awayTeam {
+        id
+        name
+        sport
+        __typename
+      }
+      yourTeam {
+        id
+        __typename
+      }
+      season {
+        id
+        __typename
+      }
+      dateAndTime {
+        full
+        status
+        durationInMinutes
+        __typename
+      }
+      location {
+        name
+        address
+        __typename
+      }
+      division {
+        name
+        __typename
+      }
+      __typename
+    }
+    homeTeam {
+      team {
+        id
+        name
+        logo
+        sport
+        __typename
+      }
+      players {
+        ...ScorekeeperRosterPlayer
+        __typename
+      }
+      __typename
+    }
+    awayTeam {
+      team {
+        id
+        name
+        logo
+        sport
+        __typename
+      }
+      players {
+        ...ScorekeeperRosterPlayer
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+fragment ScorekeeperRosterPlayer on GameSheetPlayer {
+  playerId
+  playerNumber
+  playerNumberDisplay
+  playerName
+  position
+  status
+  isGoalie
+  temp
+  __typename
+}

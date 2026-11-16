@@ -1,0 +1,6 @@
+mutation scorekeeperSetAttendance($input: SetEventAttendanceForPlayerInput!) {
+  setEventAttendanceForPlayer(input: $input) {
+    id
+    __typename
+  }
+}

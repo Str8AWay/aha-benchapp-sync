@@ -1,0 +1,17 @@
+mutation manageGoaliesCreateEventGoalie($input: CreateEventGoalieInput!) {
+  createEventGoalie(input: $input) {
+    id
+    period
+    time
+    player {
+      id
+      name
+      __typename
+    }
+    team {
+      id
+      __typename
+    }
+    __typename
+  }
+}

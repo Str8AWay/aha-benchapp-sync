@@ -1,0 +1,43 @@
+mutation scorekeeperCreateEventPoint($input: CreateEventPointInput!) {
+  createEventPoint(input: $input) {
+    ...ScorekeeperPoint
+    __typename
+  }
+}
+fragment ScorekeeperPoint on EventPoint {
+  id
+  event {
+    id
+    period
+    __typename
+  }
+  team {
+    id
+    name
+    __typename
+  }
+  goalPlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  assistOnePlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  assistTwoPlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  homeAway
+  period
+  time
+  type
+  date
+  __typename
+}
+fragment ScorekeeperPlayer on Player {
+  id
+  name
+  profilePhotoUrl
+  __typename
+}

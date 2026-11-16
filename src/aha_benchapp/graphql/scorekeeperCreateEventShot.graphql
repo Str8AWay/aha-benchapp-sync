@@ -1,0 +1,20 @@
+mutation scorekeeperCreateEventShot($input: CreateEventShotInput!) {
+  createEventShot(input: $input) {
+    ...ScorekeeperShot
+    __typename
+  }
+}
+fragment ScorekeeperShot on EventShot {
+  id
+  period
+  goalId
+  event {
+    id
+    __typename
+  }
+  team {
+    id
+    __typename
+  }
+  __typename
+}

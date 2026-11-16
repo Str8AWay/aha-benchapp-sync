@@ -1,0 +1,334 @@
+{
+  "data": {
+    "gameSheet": {
+      "event": {
+        "id": 3766427,
+        "type": "Game",
+        "leagueId": 390536,
+        "canScorekeep": true,
+        "homeTeam": {
+          "id": 1247980,
+          "name": "C1 Les Etoiles du Nord",
+          "sport": "Hockey",
+          "__typename": "Team"
+        },
+        "awayTeam": {
+          "id": 1528241,
+          "name": "Moose C1",
+          "sport": "Hockey",
+          "__typename": "Team"
+        },
+        "yourTeam": {
+          "id": 1247980,
+          "__typename": "Team"
+        },
+        "season": {
+          "id": 531381,
+          "__typename": "Season"
+        },
+        "dateAndTime": {
+          "full": "2026-11-08 16:20:00",
+          "status": "Past",
+          "durationInMinutes": 90,
+          "__typename": "EventDateAndTime"
+        },
+        "location": {
+          "name": "Phalen",
+          "address": "",
+          "__typename": "EventLocation"
+        },
+        "division": null,
+        "__typename": "Event"
+      },
+      "homeTeam": {
+        "team": {
+          "id": 1247980,
+          "name": "C1 Les Etoiles du Nord"
+        },
+        "players": [
+          {
+            "playerId": 900012,
+            "playerNumber": 4,
+            "playerNumberDisplay": "4",
+            "playerName": "Player 4",
+            "position": "Forward",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900016,
+            "playerNumber": 5,
+            "playerNumberDisplay": "5",
+            "playerName": "Player 5",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900003,
+            "playerNumber": 10,
+            "playerNumberDisplay": "10",
+            "playerName": "Player 10",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900006,
+            "playerNumber": 12,
+            "playerNumberDisplay": "12",
+            "playerName": "Player 12",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900019,
+            "playerNumber": 16,
+            "playerNumberDisplay": "16",
+            "playerName": "Player 16",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900009,
+            "playerNumber": 20,
+            "playerNumberDisplay": "20",
+            "playerName": "Player 20",
+            "position": "Forward",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900013,
+            "playerNumber": 21,
+            "playerNumberDisplay": "21",
+            "playerName": "Player 21",
+            "position": "Forward",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900004,
+            "playerNumber": 24,
+            "playerNumberDisplay": "24",
+            "playerName": "Player 24",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900008,
+            "playerNumber": 26,
+            "playerNumberDisplay": "26",
+            "playerName": "Player 26",
+            "position": "Forward",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900015,
+            "playerNumber": 30,
+            "playerNumberDisplay": "30",
+            "playerName": "Player 30",
+            "position": "Goalie",
+            "status": "In",
+            "isGoalie": true,
+            "temp": false
+          },
+          {
+            "playerId": 900010,
+            "playerNumber": 33,
+            "playerNumberDisplay": "33",
+            "playerName": "Player 33",
+            "position": "Any",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900002,
+            "playerNumber": 36,
+            "playerNumberDisplay": "36",
+            "playerName": "Player 36",
+            "position": "Forward",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900007,
+            "playerNumber": 37,
+            "playerNumberDisplay": "37",
+            "playerName": "Player 37",
+            "position": "Forward",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900020,
+            "playerNumber": 43,
+            "playerNumberDisplay": "43",
+            "playerName": "Player 43",
+            "position": "Forward",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900014,
+            "playerNumber": 55,
+            "playerNumberDisplay": "55",
+            "playerName": "Player 55",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900011,
+            "playerNumber": 69,
+            "playerNumberDisplay": "69",
+            "playerName": "Player 69",
+            "position": "Any",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900017,
+            "playerNumber": 80,
+            "playerNumberDisplay": "80",
+            "playerName": "Player 80",
+            "position": "Defence",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900018,
+            "playerNumber": 89,
+            "playerNumberDisplay": "89",
+            "playerName": "Player 89",
+            "position": "Any",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900001,
+            "playerNumber": 92,
+            "playerNumberDisplay": "92",
+            "playerName": "Player 92",
+            "position": "Defence",
+            "status": "Out",
+            "isGoalie": false,
+            "temp": false
+          },
+          {
+            "playerId": 900005,
+            "playerNumber": 94,
+            "playerNumberDisplay": "94",
+            "playerName": "Player 94",
+            "position": "Defence",
+            "status": "In",
+            "isGoalie": false,
+            "temp": false
+          }
+        ],
+        "__typename": "GameSheetTeamData"
+      },
+      "awayTeam": {
+        "team": {
+          "id": 1528241,
+          "name": "Moose C1"
+        },
+        "players": [
+          {
+            "playerId": 900022,
+            "playerNumber": 8,
+            "playerNumberDisplay": "8",
+            "playerName": "Player 8",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900025,
+            "playerNumber": 23,
+            "playerNumberDisplay": "23",
+            "playerName": "Player 23",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900026,
+            "playerNumber": 25,
+            "playerNumberDisplay": "25",
+            "playerName": "Player 25",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900027,
+            "playerNumber": 37,
+            "playerNumberDisplay": "37",
+            "playerName": "Player 37",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900024,
+            "playerNumber": 78,
+            "playerNumberDisplay": "78",
+            "playerName": "Player 78",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900021,
+            "playerNumber": 80,
+            "playerNumberDisplay": "80",
+            "playerName": "Player 80",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          },
+          {
+            "playerId": 900023,
+            "playerNumber": 92,
+            "playerNumberDisplay": "92",
+            "playerName": "Player 92",
+            "position": "Any",
+            "status": "In",
+            "isGoalie": false,
+            "temp": true
+          }
+        ],
+        "__typename": "GameSheetTeamData"
+      },
+      "__typename": "GameSheet"
+    }
+  }
+}

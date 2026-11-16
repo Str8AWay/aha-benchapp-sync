@@ -1,0 +1,74 @@
+query scorekeeperPointsAndPenalties($eventId: Int!) {
+  eventPointsAndPenalties(eventId: $eventId) {
+    points {
+      ...ScorekeeperPoint
+      __typename
+    }
+    penalties {
+      ...ScorekeeperPenalty
+      __typename
+    }
+    __typename
+  }
+}
+fragment ScorekeeperPoint on EventPoint {
+  id
+  event {
+    id
+    period
+    __typename
+  }
+  team {
+    id
+    name
+    __typename
+  }
+  goalPlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  assistOnePlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  assistTwoPlayer {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  homeAway
+  period
+  time
+  type
+  date
+  __typename
+}
+fragment ScorekeeperPlayer on Player {
+  id
+  name
+  profilePhotoUrl
+  __typename
+}
+fragment ScorekeeperPenalty on EventPenalty {
+  id
+  event {
+    id
+    __typename
+  }
+  team {
+    id
+    name
+    __typename
+  }
+  player {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  homeAway
+  period
+  time
+  type
+  duration
+  kind
+  date
+  __typename
+}

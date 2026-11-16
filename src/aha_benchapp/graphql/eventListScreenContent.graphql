@@ -1,0 +1,387 @@
+query eventListScreenContent($eventsInput: EventsInput!, $take: Int, $skip: Int, $returnBothTeamsPlayers: Boolean = false) {
+  events(input: $eventsInput, take: $take, skip: $skip) {
+    ...EventsList
+    __typename
+  }
+}
+fragment EventsList on Event {
+  eventNumber
+  dependentStatuses {
+    id
+    playerId
+    teamId
+    name
+    status
+    __typename
+  }
+  ...EventCard
+  ...FutureEventCard
+  ...EventInProgressCard
+  ...LeagueEventCard
+  __typename
+}
+fragment EventCard on Event {
+  id
+  type
+  subtype
+  notes
+  title
+  homeOrAway
+  homeJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  awayJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  season {
+    id
+    isManager
+    __typename
+  }
+  homeTeam {
+    id
+    name
+    sport
+    isManager
+    logo
+    currency
+    __typename
+  }
+  awayTeam {
+    id
+    name
+    sport
+    isManager
+    logo
+    currency
+    __typename
+  }
+  location {
+    name
+    address
+    latitude
+    longitude
+    __typename
+  }
+  dateAndTime {
+    date
+    time
+    durationInMinutes
+    full
+    status
+    __typename
+  }
+  createdAt
+  duties {
+    ...EventCardDuty
+    __typename
+  }
+  yourStatusType
+  rsvpTypeForPlayer {
+    type
+    message
+    description
+    __typename
+  }
+  period
+  canScorekeep
+  playerStatusCounts(returnBothTeamsPlayers: $returnBothTeamsPlayers) {
+    ...EventPlayerStatusCountsSummary
+    __typename
+  }
+  yourSpare {
+    id
+    spareFee
+    playerId
+    __typename
+  }
+  stats {
+    homeTeamScore
+    homeTeamShots
+    awayTeamScore
+    awayTeamShots
+    __typename
+  }
+  finderGame {
+    id
+    status
+    player {
+      id
+      __typename
+    }
+    __typename
+  }
+  yourTeam {
+    id
+    name
+    sport
+    isManager
+    logo
+    currency
+    healthCheckEnabled
+    healthCheckHoursBefore
+    league {
+      id
+      managed
+      __typename
+    }
+    subscription {
+      id
+      active
+      __typename
+    }
+    theme {
+      id
+      header
+      __typename
+    }
+    __typename
+  }
+  opponent {
+    id
+    __typename
+  }
+  lineups {
+    id
+    type
+    playerId
+    position
+    status
+    editedBy {
+      id
+      name
+      __typename
+    }
+    date
+    __typename
+  }
+  lineLastEdited {
+    player {
+      id
+      nickname
+      __typename
+    }
+    editedAt
+    __typename
+  }
+  battingOrderLastEdited {
+    player {
+      id
+      nickname
+      __typename
+    }
+    editedAt
+    __typename
+  }
+  status
+  healthCheckResponses {
+    id
+    team {
+      id
+      __typename
+    }
+    season {
+      id
+      __typename
+    }
+    player {
+      id
+      __typename
+    }
+    status
+    __typename
+  }
+  __typename
+}
+fragment EventJerseySummary on EventJersey {
+  isAutomatic
+  jersey {
+    id
+    teamId
+    name
+    color
+    __typename
+  }
+  __typename
+}
+fragment EventCardDuty on EventDuty {
+  id
+  type
+  name
+  note
+  player {
+    id
+    name
+    __typename
+  }
+  status
+  subtype
+  __typename
+}
+fragment EventPlayerStatusCountsSummary on EventPlayerStatusCounts {
+  in
+  out
+  wait
+  noShow
+  unknown
+  total
+  goaliesIn
+  staffIn
+  hasGoalie
+  byTeam {
+    teamId
+    in
+    out
+    wait
+    noShow
+    unknown
+    total
+    goaliesIn
+    staffIn
+    hasGoalie
+    __typename
+  }
+  __typename
+}
+fragment FutureEventCard on Event {
+  id
+  title
+  type
+  subtype
+  homeOrAway
+  homeJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  awayJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  homeTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  awayTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  dateAndTime {
+    full
+    __typename
+  }
+  location {
+    name
+    __typename
+  }
+  yourStatusType
+  status
+  playerStatusCounts(returnBothTeamsPlayers: $returnBothTeamsPlayers) {
+    ...EventPlayerStatusCountsSummary
+    __typename
+  }
+  __typename
+}
+fragment EventInProgressCard on Event {
+  id
+  type
+  title
+  subtype
+  status
+  location {
+    name
+    __typename
+  }
+  yourTeam {
+    id
+    sport
+    __typename
+  }
+  homeTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  awayTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  canScorekeep
+  season {
+    id
+    isManager
+    __typename
+  }
+  dateAndTime {
+    full
+    durationInMinutes
+    status
+    __typename
+  }
+  stats {
+    homeTeamScore
+    awayTeamScore
+    __typename
+  }
+  period
+  yourStatusType
+  __typename
+}
+fragment LeagueEventCard on Event {
+  id
+  type
+  subtype
+  title
+  location {
+    name
+    __typename
+  }
+  yourTeam {
+    id
+    sport
+    __typename
+  }
+  homeTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  awayTeam {
+    id
+    name
+    logo
+    __typename
+  }
+  yourTeam {
+    id
+    quickScoreEnabled
+    __typename
+  }
+  dateAndTime {
+    full
+    durationInMinutes
+    status
+    __typename
+  }
+  stats {
+    homeTeamScore
+    awayTeamScore
+    __typename
+  }
+  period
+  yourStatusType
+  playerStatusCounts(returnBothTeamsPlayers: $returnBothTeamsPlayers) {
+    ...EventPlayerStatusCountsSummary
+    __typename
+  }
+  __typename
+}

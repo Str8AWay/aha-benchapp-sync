@@ -1,0 +1,76 @@
+{
+  "data": {
+    "events": [
+      {
+        "id": 3766428,
+        "type": "Game",
+        "homeOrAway": "Away",
+        "canScorekeep": true,
+        "homeTeam": {
+          "id": 1528242,
+          "name": "Sled Dogs"
+        },
+        "awayTeam": {
+          "id": 1247980,
+          "name": "C1 Les Etoiles du Nord"
+        },
+        "opponent": {
+          "id": 1528242
+        },
+        "yourTeam": {
+          "id": 1247980
+        },
+        "season": {
+          "id": 531381
+        },
+        "dateAndTime": {
+          "date": "2026-11-13",
+          "time": "20:00:00",
+          "full": "2026-11-13 20:00:00",
+          "status": "Past"
+        },
+        "stats": {
+          "homeTeamScore": 0,
+          "homeTeamShots": 0,
+          "awayTeamScore": 0,
+          "awayTeamShots": 0
+        }
+      },
+      {
+        "id": 3766427,
+        "type": "Game",
+        "homeOrAway": "Home",
+        "canScorekeep": true,
+        "homeTeam": {
+          "id": 1247980,
+          "name": "C1 Les Etoiles du Nord"
+        },
+        "awayTeam": {
+          "id": 1528241,
+          "name": "Moose C1"
+        },
+        "opponent": {
+          "id": 1528241
+        },
+        "yourTeam": {
+          "id": 1247980
+        },
+        "season": {
+          "id": 531381
+        },
+        "dateAndTime": {
+          "date": "2026-11-08",
+          "time": "16:20:00",
+          "full": "2026-11-08 16:20:00",
+          "status": "Past"
+        },
+        "stats": {
+          "homeTeamScore": 3,
+          "homeTeamShots": 0,
+          "awayTeamScore": 4,
+          "awayTeamShots": 0
+        }
+      }
+    ]
+  }
+}

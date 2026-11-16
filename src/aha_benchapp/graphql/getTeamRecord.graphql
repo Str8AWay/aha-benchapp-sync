@@ -1,0 +1,13 @@
+query getTeamRecord($teamId: Int!, $seasonId: Int!) {
+  team(id: $teamId) {
+    id
+    record(seasonId: $seasonId) {
+      wins
+      losses
+      ties
+      OTL
+      __typename
+    }
+    __typename
+  }
+}

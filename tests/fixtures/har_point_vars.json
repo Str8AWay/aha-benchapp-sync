@@ -1,0 +1,14 @@
+{
+  "input": {
+    "assistOnePlayerId": 900004,
+    "assistTwoPlayerId": null,
+    "eventId": 3766427,
+    "goalPlayerId": 900016,
+    "homeAway": "Home",
+    "period": "One",
+    "seasonId": 531381,
+    "teamId": 1247980,
+    "time": "11:20",
+    "type": "EvenStrength"
+  }
+}

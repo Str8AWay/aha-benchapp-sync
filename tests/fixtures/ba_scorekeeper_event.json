@@ -1,0 +1,777 @@
+{
+  "data": {
+    "event": {
+      "id": 3766427,
+      "period": "Three",
+      "stats": {
+        "homeTeamScore": 3,
+        "awayTeamScore": 4,
+        "homeTeamShots": 0,
+        "awayTeamShots": 0,
+        "__typename": "EventStats"
+      },
+      "homeTeam": {
+        "id": 1247980,
+        "name": "C1 Les Etoiles du Nord"
+      },
+      "awayTeam": {
+        "id": 1528241,
+        "name": "Moose C1"
+      },
+      "shots": [
+        {
+          "id": 2658243,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658244,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658245,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658246,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658247,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658248,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658249,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658250,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658251,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658252,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658253,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658254,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658255,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658256,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658257,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658258,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658259,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658260,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658261,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658262,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658263,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658264,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658265,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658266,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658267,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658268,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658269,
+          "period": "One",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658271,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658272,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658273,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658274,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658275,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658276,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658277,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658278,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658279,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658280,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658281,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658282,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658283,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658284,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658285,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658286,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658289,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658290,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658291,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658292,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658293,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658294,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658295,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658296,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658297,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658298,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658299,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658300,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658301,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658302,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658303,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658304,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658305,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658306,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658307,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658308,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658309,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658310,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658311,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658312,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658313,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658314,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658315,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658316,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658317,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658318,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658319,
+          "period": "Two",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658320,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658321,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658322,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658323,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658324,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658325,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658326,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658327,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658328,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658329,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1528241
+          }
+        },
+        {
+          "id": 2658330,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658331,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658332,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658333,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658334,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658335,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658336,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658337,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658338,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        },
+        {
+          "id": 2658339,
+          "period": "Three",
+          "goalId": null,
+          "team": {
+            "id": 1247980
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "data": {
+    "eventPointsAndPenalties": {
+      "points": [
+        {
+          "id": 870044,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1247980,
+            "name": "C1 Les Etoiles du Nord",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900016,
+            "name": "Player 900016"
+          },
+          "assistOnePlayer": {
+            "id": 900004,
+            "name": "Player 900004"
+          },
+          "assistTwoPlayer": null,
+          "homeAway": "Home",
+          "period": "One",
+          "time": "11:20",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:44:48.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870046,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1528241,
+            "name": "Moose C1",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900021,
+            "name": "Player 900021"
+          },
+          "assistOnePlayer": {
+            "id": 900022,
+            "name": "Player 900022"
+          },
+          "assistTwoPlayer": null,
+          "homeAway": "Away",
+          "period": "One",
+          "time": "06:54",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:47:05.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870047,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1528241,
+            "name": "Moose C1",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900021,
+            "name": "Player 900021"
+          },
+          "assistOnePlayer": {
+            "id": 900023,
+            "name": "Player 900023"
+          },
+          "assistTwoPlayer": {
+            "id": 900024,
+            "name": "Player 900024"
+          },
+          "homeAway": "Away",
+          "period": "Two",
+          "time": "15:03",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:48:36.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870048,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1247980,
+            "name": "C1 Les Etoiles du Nord",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900003,
+            "name": "Player 900003"
+          },
+          "assistOnePlayer": {
+            "id": 900002,
+            "name": "Player 900002"
+          },
+          "assistTwoPlayer": null,
+          "homeAway": "Home",
+          "period": "Two",
+          "time": "04:57",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:49:12.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870049,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1247980,
+            "name": "C1 Les Etoiles du Nord",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900020,
+            "name": "Player 900020"
+          },
+          "assistOnePlayer": {
+            "id": 900016,
+            "name": "Player 900016"
+          },
+          "assistTwoPlayer": null,
+          "homeAway": "Home",
+          "period": "Two",
+          "time": "02:50",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:50:19.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870052,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1528241,
+            "name": "Moose C1",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900023,
+            "name": "Player 900023"
+          },
+          "assistOnePlayer": {
+            "id": 900026,
+            "name": "Player 900026"
+          },
+          "assistTwoPlayer": {
+            "id": 900022,
+            "name": "Player 900022"
+          },
+          "homeAway": "Away",
+          "period": "Three",
+          "time": "11:54",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:53:24.000Z",
+          "__typename": "EventPoint"
+        },
+        {
+          "id": 870056,
+          "event": {
+            "id": 3766427,
+            "period": "Three",
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1528241,
+            "name": "Moose C1",
+            "__typename": "Team"
+          },
+          "goalPlayer": {
+            "id": 900024,
+            "name": "Player 900024"
+          },
+          "assistOnePlayer": {
+            "id": 900027,
+            "name": "Player 900027"
+          },
+          "assistTwoPlayer": null,
+          "homeAway": "Away",
+          "period": "Three",
+          "time": "00:44",
+          "type": "EvenStrength",
+          "date": "2026-11-16T08:54:24.000Z",
+          "__typename": "EventPoint"
+        }
+      ],
+      "penalties": [
+        {
+          "id": 195703,
+          "event": {
+            "id": 3766427,
+            "__typename": "Event"
+          },
+          "team": {
+            "id": 1528241,
+            "name": "Moose C1",
+            "__typename": "Team"
+          },
+          "player": {
+            "id": 900025,
+            "name": "Player 900025"
+          },
+          "homeAway": "Away",
+          "period": "Two",
+          "time": "11:07",
+          "type": "Minor",
+          "duration": "Two",
+          "kind": "Hooking",
+          "date": "2026-11-16T08:51:06.000Z",
+          "__typename": "EventPenalty"
+        }
+      ],
+      "__typename": "EventPointsAndPenaltiesResponse"
+    }
+  }
+}

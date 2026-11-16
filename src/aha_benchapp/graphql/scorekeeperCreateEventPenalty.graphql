@@ -1,0 +1,36 @@
+mutation scorekeeperCreateEventPenalty($input: CreateEventPenaltyInput!) {
+  createEventPenalty(input: $input) {
+    ...ScorekeeperPenalty
+    __typename
+  }
+}
+fragment ScorekeeperPenalty on EventPenalty {
+  id
+  event {
+    id
+    __typename
+  }
+  team {
+    id
+    name
+    __typename
+  }
+  player {
+    ...ScorekeeperPlayer
+    __typename
+  }
+  homeAway
+  period
+  time
+  type
+  duration
+  kind
+  date
+  __typename
+}
+fragment ScorekeeperPlayer on Player {
+  id
+  name
+  profilePhotoUrl
+  __typename
+}

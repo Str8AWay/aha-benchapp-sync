@@ -1,0 +1,340 @@
+query eventDetailsScreenContent($id: Int!, $returnBothTeamsPlayers: Boolean = false) {
+  event(id: $id) {
+    ...EventDetails
+    __typename
+  }
+}
+fragment EventDetails on Event {
+  id
+  type
+  title
+  status
+  leagueId
+  canScorekeep
+  season {
+    id
+    isManager
+    __typename
+  }
+  subtype
+  yourTeam {
+    ...EventDetailsTeam
+    drinkType
+    defaultMaxGoalies
+    currency
+    healthCheckEnabled
+    healthCheckHoursBefore
+    defaultSpareFee
+    defaultTrackSpareFee
+    prepayRequired
+    timezone
+    createdAt
+    subscription {
+      id
+      active
+      __typename
+    }
+    league {
+      id
+      managed
+      __typename
+    }
+    quickScoreEnabled
+    __typename
+  }
+  opponent {
+    ...EventDetailsTeam
+    __typename
+  }
+  yourStatusType
+  stats {
+    homeTeamScore
+    awayTeamScore
+    __typename
+  }
+  players(
+    returnBothTeamsPlayers: $returnBothTeamsPlayers
+    statuses: [In, Wait, Out, NoShow]
+  ) {
+    ...EventDetailsPlayer
+    __typename
+  }
+  unknownPlayers: players(
+    returnBothTeamsPlayers: $returnBothTeamsPlayers
+    statuses: [Unknown]
+    take: 20
+  ) {
+    ...EventDetailsPlayer
+    __typename
+  }
+  playerStatusCounts(returnBothTeamsPlayers: $returnBothTeamsPlayers) {
+    ...EventPlayerStatusCountsSummary
+    __typename
+  }
+  homeTeam {
+    ...EventDetailsTeam
+    __typename
+  }
+  awayTeam {
+    ...EventDetailsTeam
+    __typename
+  }
+  duties {
+    ...EventDetailsPlayerDuty
+    __typename
+  }
+  dateAndTime {
+    date
+    time
+    full
+    status
+    durationInMinutes
+    __typename
+  }
+  location {
+    name
+    address
+    longitude
+    latitude
+    __typename
+  }
+  spares {
+    id
+    playerId
+    spareFee
+    __typename
+  }
+  maxPlayers
+  notes
+  period
+  homeOrAway
+  ...InviteSparesScreen
+  lineups {
+    id
+    type
+    playerId
+    position
+    status
+    editedBy {
+      id
+      name
+      __typename
+    }
+    date
+    __typename
+  }
+  lineLastEdited {
+    player {
+      id
+      nickname
+      __typename
+    }
+    editedAt
+    __typename
+  }
+  battingOrderLastEdited {
+    player {
+      id
+      nickname
+      __typename
+    }
+    editedAt
+    __typename
+  }
+  finderGame {
+    id
+    status
+    player {
+      id
+      __typename
+    }
+    __typename
+  }
+  healthCheck {
+    status
+    __typename
+  }
+  leagueStaff {
+    ...AssignLeagueStaffScreen
+    __typename
+  }
+  homeTeamRoom
+  awayTeamRoom
+  homeJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  awayJersey {
+    ...EventJerseySummary
+    __typename
+  }
+  division {
+    id
+    name
+    __typename
+  }
+  __typename
+}
+fragment EventDetailsTeam on Team {
+  id
+  name
+  id
+  logo
+  sport
+  currency
+  __typename
+}
+fragment EventDetailsPlayer on EventPlayer {
+  id
+  player {
+    id
+    name
+    profilePhotoUrl
+    email
+    phone
+    __typename
+  }
+  playerTeamId
+  playerId
+  eventId
+  playerName
+  playerNumber
+  playerNumberDisplay
+  playerRanking
+  position
+  class
+  subclass
+  status
+  note
+  paidFee
+  dateAndTime {
+    date
+    time
+    full
+    fullWithServerTimezone
+    __typename
+  }
+  notification {
+    id
+    method
+    dateAndTime {
+      date
+      time
+      full
+      fullWithServerTimezone
+      __typename
+    }
+    __typename
+  }
+  payments {
+    id
+    status
+    summary {
+      overDueAmount
+      dueAmount
+      totalAmount
+      paidAmount
+      __typename
+    }
+    __typename
+  }
+  team {
+    id
+    __typename
+  }
+  playerTeam {
+    id
+    handedness
+    __typename
+  }
+  __typename
+}
+fragment EventPlayerStatusCountsSummary on EventPlayerStatusCounts {
+  in
+  out
+  wait
+  noShow
+  unknown
+  total
+  goaliesIn
+  staffIn
+  hasGoalie
+  byTeam {
+    teamId
+    in
+    out
+    wait
+    noShow
+    unknown
+    total
+    goaliesIn
+    staffIn
+    hasGoalie
+    __typename
+  }
+  __typename
+}
+fragment EventDetailsPlayerDuty on EventDuty {
+  id
+  name
+  type
+  note
+  status
+  subtype
+  player {
+    name
+    id
+    profilePhoto
+    __typename
+  }
+  playerTeam {
+    id
+    playerName
+    __typename
+  }
+  __typename
+}
+fragment InviteSparesScreen on Event {
+  id
+  type
+  season {
+    id
+    __typename
+  }
+  yourTeam {
+    id
+    defaultSpareFee
+    defaultTrackSpareFee
+    prepayRequired
+    subscription {
+      id
+      active
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+fragment AssignLeagueStaffScreen on EventLeagueStaff {
+  id
+  type
+  position
+  player {
+    id
+    name
+    profilePhotoUrl
+    __typename
+  }
+  __typename
+}
+fragment EventJerseySummary on EventJersey {
+  isAutomatic
+  jersey {
+    id
+    teamId
+    name
+    color
+    __typename
+  }
+  __typename
+}

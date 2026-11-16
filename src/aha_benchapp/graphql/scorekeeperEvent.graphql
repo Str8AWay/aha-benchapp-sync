@@ -1,0 +1,87 @@
+query scorekeeperEvent($eventId: Int!) {
+  event(id: $eventId) {
+    id
+    type
+    title
+    status
+    homeOrAway
+    leagueId
+    season {
+      id
+      __typename
+    }
+    homeTeam {
+      ...ScorekeeperTeam
+      __typename
+    }
+    awayTeam {
+      ...ScorekeeperTeam
+      __typename
+    }
+    yourTeam {
+      ...ScorekeeperTeam
+      __typename
+    }
+    opponent {
+      ...ScorekeeperTeam
+      __typename
+    }
+    stats {
+      ...ScorekeeperEventStats
+      __typename
+    }
+    shots {
+      ...ScorekeeperShot
+      __typename
+    }
+    dateAndTime {
+      date
+      time
+      full
+      status
+      durationInMinutes
+      __typename
+    }
+    location {
+      name
+      address
+      __typename
+    }
+    division {
+      name
+      __typename
+    }
+    period
+    endedAt
+    canScorekeep
+    __typename
+  }
+}
+fragment ScorekeeperTeam on Team {
+  id
+  name
+  logo
+  sport
+  __typename
+}
+fragment ScorekeeperEventStats on EventStats {
+  homeTeamScore
+  awayTeamScore
+  homeTeamShots
+  awayTeamShots
+  __typename
+}
+fragment ScorekeeperShot on EventShot {
+  id
+  period
+  goalId
+  event {
+    id
+    __typename
+  }
+  team {
+    id
+    __typename
+  }
+  __typename
+}

@@ -1,0 +1,7 @@
+mutation scorekeeperSetPeriod($id: Int!, $period: EventPeriod!) {
+  setEventPeriod(id: $id, period: $period) {
+    id
+    period
+    __typename
+  }
+}

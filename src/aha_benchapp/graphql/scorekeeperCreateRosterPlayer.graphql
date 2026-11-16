@@ -1,0 +1,13 @@
+mutation scorekeeperCreateRosterPlayer($input: CreateRosterPlayerInput!) {
+  createRosterPlayer(input: $input) {
+    id
+    playerName
+    playerNumber
+    playerNumberDisplay
+    player {
+      id
+      __typename
+    }
+    __typename
+  }
+}
