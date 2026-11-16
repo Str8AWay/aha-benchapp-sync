@@ -136,3 +136,26 @@ def test_run_stops_before_a_game_when_time_runs_low(aha, deps):  # review I-4
     results = run(CFG, **deps, seconds_left=lambda: next(budget))
     assert [r.game_id for r in results] == [28819]
     assert deps["store"].get(28852) is None  # untouched; picked up next run
+
+
+def test_run_skips_when_another_run_holds_the_lock(aha, deps):  # review I-5
+    serve_game(aha, 28819)
+    serve_game(aha, 28852)
+    assert deps["store"].acquire_lock("someone-else", 1000)
+    assert run(CFG, **deps) == []
+    assert deps["client"].calls == []
+
+
+def test_run_releases_the_lock(aha, deps):
+    serve_game(aha, 28819)
+    serve_game(aha, 28852)
+    run(CFG, **deps)
+    assert deps["store"].acquire_lock("next-run", 1000)
+
+
+def test_run_leaves_another_runs_in_progress_game_alone(aha, deps):
+    deps["store"].put(GameResult(28852, Status.SYNCED))
+    deps["store"].put(GameResult(28819, Status.IN_PROGRESS, 3766427))
+    assert deps["store"].acquire_lock("someone-else", 1000)
+    assert run(CFG, **deps) == []
+    assert deps["store"].get(28819).status is Status.IN_PROGRESS

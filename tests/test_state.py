@@ -63,3 +63,40 @@ def test_memory_store_keeps_a_snapshot():
     store.put(result)
     result.created_point_ids.append(99)
     assert store.get(1).created_point_ids == []
+
+
+def test_memory_lock_excludes_a_second_run():  # review I-5
+    store = MemoryStateStore()
+    assert store.acquire_lock("run-a", 1000)
+    assert not store.acquire_lock("run-b", 1000)
+    store.release_lock("run-a")
+    assert store.acquire_lock("run-b", 1000)
+
+
+def test_dynamo_acquire_lock_is_conditional():
+    client, stub = _stubbed()
+    stub.add_response("put_item", {}, {
+        "TableName": TABLE,
+        "Item": {"game_id": {"N": "0"}, "lock_owner": {"S": "run-a"}, "lock_expires": {"N": ANY}},
+        "ConditionExpression": "attribute_not_exists(game_id) OR lock_expires < :now",
+        "ExpressionAttributeValues": {":now": {"N": ANY}},
+    })
+    stub.add_client_error("put_item", "ConditionalCheckFailedException")
+    with stub:
+        store = DynamoStateStore(TABLE, client)
+        assert store.acquire_lock("run-a", 1000) is True
+        assert store.acquire_lock("run-b", 1000) is False
+
+
+def test_dynamo_release_lock_only_releases_own_lock():
+    client, stub = _stubbed()
+    stub.add_response("delete_item", {}, {
+        "TableName": TABLE, "Key": {"game_id": {"N": "0"}},
+        "ConditionExpression": "lock_owner = :owner",
+        "ExpressionAttributeValues": {":owner": {"S": "run-a"}},
+    })
+    stub.add_client_error("delete_item", "ConditionalCheckFailedException")
+    with stub:
+        store = DynamoStateStore(TABLE, client)
+        store.release_lock("run-a")
+        store.release_lock("run-a")  # already gone or taken over: not an error

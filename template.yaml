@@ -35,6 +35,8 @@ Resources:
       MemorySize: 256
       LoggingConfig:
         LogGroup: !Ref SyncLogGroup
+      EventInvokeConfig:
+        MaximumRetryAttempts: 0  # a failed run already emailed; tomorrow's run retries
       Environment:
         Variables:
           AHA_TEAM_URL: !Ref AhaTeamUrl

@@ -1,5 +1,6 @@
 """Per-game sync state, keyed by AHA game ID."""
 import copy
+import time
 from datetime import datetime, timezone
 from typing import Protocol
 
@@ -13,16 +14,36 @@ class StateStore(Protocol):
 
     def put(self, result: GameResult) -> None: ...
 
+    def acquire_lock(self, owner: str, seconds: int) -> bool:
+        """Take the run lock unless another run holds an unexpired one."""
+        ...
+
+    def release_lock(self, owner: str) -> None: ...
+
+
+_LOCK_KEY = {"game_id": {"N": "0"}}  # AHA game IDs are positive, so 0 is free for the run lock
+
 
 class MemoryStateStore:
     def __init__(self):
         self._results: dict[int, GameResult] = {}
+        self._lock: tuple[str, float] | None = None
 
     def get(self, game_id: int) -> GameResult | None:
         return self._results.get(game_id)
 
     def put(self, result: GameResult) -> None:
         self._results[result.game_id] = copy.deepcopy(result)
+
+    def acquire_lock(self, owner: str, seconds: int) -> bool:
+        if self._lock and self._lock[1] > time.time():
+            return False
+        self._lock = (owner, time.time() + seconds)
+        return True
+
+    def release_lock(self, owner: str) -> None:
+        if self._lock and self._lock[0] == owner:
+            self._lock = None
 
 
 class DynamoStateStore:
@@ -55,3 +76,26 @@ class DynamoStateStore:
         if result.event_id is not None:
             item["event_id"] = {"N": str(result.event_id)}
         self._client.put_item(TableName=self._table, Item=item)
+
+    def acquire_lock(self, owner: str, seconds: int) -> bool:
+        try:
+            self._client.put_item(
+                TableName=self._table,
+                Item={**_LOCK_KEY, "lock_owner": {"S": owner}, "lock_expires": {"N": str(int(time.time()) + seconds)}},
+                ConditionExpression="attribute_not_exists(game_id) OR lock_expires < :now",
+                ExpressionAttributeValues={":now": {"N": str(int(time.time()))}},
+            )
+        except self._client.exceptions.ConditionalCheckFailedException:
+            return False
+        return True
+
+    def release_lock(self, owner: str) -> None:
+        try:
+            self._client.delete_item(
+                TableName=self._table,
+                Key=_LOCK_KEY,
+                ConditionExpression="lock_owner = :owner",
+                ExpressionAttributeValues={":owner": {"S": owner}},
+            )
+        except self._client.exceptions.ConditionalCheckFailedException:
+            pass  # expired and taken over by another run

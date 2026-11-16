@@ -1,5 +1,6 @@
 """Copy AHA box scores into BenchApp's scorekeeper."""
 import logging
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import NoReturn
@@ -276,6 +277,7 @@ class _GameSync:
 
 MAX_GAMES_PER_RUN = 20
 MIN_SECONDS_PER_GAME = 120  # headroom for one game's ~100 BenchApp calls
+LOCK_SECONDS = 1000  # longer than the 900 s Lambda timeout
 
 
 def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store: StateStore, notifier,
@@ -287,34 +289,55 @@ def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store
     rest are picked up next run.
     """
     game_ids = [only_game] if only_game else completed_game_ids(fetch(cfg.aha_team_url, session))
-    priors = {game_id: (prior.status if (prior := store.get(game_id)) else None) for game_id in game_ids}
+    stored = {game_id: store.get(game_id) for game_id in game_ids}
+    priors = {game_id: prior.status if prior else None for game_id, prior in stored.items()}
+    todo = [g for g, prior in stored.items() if prior is None or prior.status.retryable or prior.status is Status.IN_PROGRESS]
     results: list[GameResult] = []
-    pending: list[int] = []
-    for game_id in game_ids:
-        prior = store.get(game_id)
-        if prior is None or prior.status.retryable:
-            pending.append(game_id)
-        elif prior.status is Status.IN_PROGRESS:
-            prior.status = Status.NEEDS_CLEANUP
-            prior.warnings.insert(0, "a previous run stopped partway through this game")
-            if not cfg.dry_run:
-                store.put(prior)
-            results.append(prior)
-    pending = pending[:MAX_GAMES_PER_RUN]
+    if not todo:
+        return results
 
-    if pending:
-        client.login(*credentials())
-        events = client.events(cfg.benchapp_team_id)
-        ctx = SyncContext(client, store, cfg.benchapp_team_id, cfg.aha_team_id, cfg.dry_run)
-        for game_id in pending:
-            if seconds_left and seconds_left() < MIN_SECONDS_PER_GAME:
-                log.warning("stopping before game %s to stay within the time limit", game_id)
-                break
-            results.append(_sync_one(ctx, session, game_id, events))
-            log.info("game %s: %s", game_id, results[-1].status.value)
+    owner = uuid.uuid4().hex
+    if not cfg.dry_run and not store.acquire_lock(owner, LOCK_SECONDS):
+        log.warning("another sync is running; leaving %d game(s) for the next run", len(todo))
+        return results
+    try:
+        pending = []
+        for game_id in todo:
+            prior = stored[game_id]
+            if prior is not None and prior.status is Status.IN_PROGRESS:
+                prior.status = Status.NEEDS_CLEANUP
+                prior.warnings.insert(0, "a previous run stopped partway through this game")
+                _save_result(cfg, store, prior)
+                results.append(prior)
+            else:
+                pending.append(game_id)
+        if pending:
+            _sync_pending(cfg, session, client, store, credentials, pending[:MAX_GAMES_PER_RUN], seconds_left, results)
+    finally:
+        if not cfg.dry_run:
+            store.release_lock(owner)
 
     notifier.notify(results, {r.game_id: priors.get(r.game_id) for r in results})
     return results
+
+
+def _save_result(cfg: Config, store: StateStore, result: GameResult) -> None:
+    if not cfg.dry_run:
+        store.put(result)
+
+
+def _sync_pending(cfg: Config, session: requests.Session, client: BenchAppClient, store: StateStore,
+                  credentials: Callable[[], tuple[str, str]], pending: list[int],
+                  seconds_left: Callable[[], float] | None, results: list[GameResult]) -> None:
+    client.login(*credentials())
+    events = client.events(cfg.benchapp_team_id)
+    ctx = SyncContext(client, store, cfg.benchapp_team_id, cfg.aha_team_id, cfg.dry_run)
+    for game_id in pending:
+        if seconds_left and seconds_left() < MIN_SECONDS_PER_GAME:
+            log.warning("stopping before game %s to stay within the time limit", game_id)
+            break
+        results.append(_sync_one(ctx, session, game_id, events))
+        log.info("game %s: %s", game_id, results[-1].status.value)
 
 
 def _sync_one(ctx: SyncContext, session: requests.Session, game_id: int, events: list[dict]) -> GameResult:
