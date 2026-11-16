@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Daily copy of AHA Hockey box scores into BenchApp's scorekeeper.
+
+Parameters:
+  AhaTeamUrl:
+    Type: String
+    Default: https://www.ahahockey.com/team/les-etoiles-du-nord-c1/308
+    Description: AHA team page (ends with the AHA team ID).
+  BenchAppTeamId:
+    Type: Number
+    Default: 1247980
+  SecretId:
+    Type: String
+    Default: aha-benchapp/credentials
+    Description: Secrets Manager secret holding {"email", "password"} for the BenchApp manager account.
+  NotifyEmail:
+    Type: String
+    Description: Where to email games that need a look.
+  DryRun:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "true"
+    Description: When true, BenchApp writes are logged instead of sent.
+
+Resources:
+  SyncFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src
+      Handler: aha_benchapp.handler.lambda_handler
+      Runtime: python3.12
+      Architectures: [arm64]
+      Timeout: 300
+      MemorySize: 256
+      LoggingConfig:
+        LogGroup: !Ref SyncLogGroup
+      Environment:
+        Variables:
+          AHA_TEAM_URL: !Ref AhaTeamUrl
+          BENCHAPP_TEAM_ID: !Ref BenchAppTeamId
+          BENCHAPP_SECRET_ID: !Ref SecretId
+          STATE_TABLE: !Ref StateTable
+          NOTIFY_TOPIC_ARN: !Ref NotifyTopic
+          DRY_RUN: !Ref DryRun
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref StateTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt NotifyTopic.TopicName
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretId}-*
+      Events:
+        Daily:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(0 8 * * ? *)
+            ScheduleExpressionTimezone: America/Chicago
+
+  SyncLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 30
+
+  StateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: game_id
+          AttributeType: N
+      KeySchema:
+        - AttributeName: game_id
+          KeyType: HASH
+
+  NotifyTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref NotifyEmail
+
+Outputs:
+  SyncFunctionName:
+    Value: !Ref SyncFunction
+  StateTableName:
+    Value: !Ref StateTable
