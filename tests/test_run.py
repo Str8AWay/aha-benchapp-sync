@@ -111,3 +111,19 @@ def test_run_dry_run_stores_nothing(aha, deps):
     serve_game(aha, 28852)
     run(Config(TEAM_URL, 308, LES_BA, None, None, None, True), **deps)
     assert deps["store"].get(28819) is None and deps["store"].get(28852) is None
+
+
+def test_run_survives_unexpected_parser_crash(aha, deps, monkeypatch):
+    serve_game(aha, 28819)
+    serve_game(aha, 28852)
+    real_parse = __import__("aha_benchapp.sync", fromlist=["parse_game"]).parse_game
+
+    def flaky_parse(game_id, html):
+        if game_id == 28819:
+            raise IndexError("list index out of range")
+        return real_parse(game_id, html)
+
+    monkeypatch.setattr("aha_benchapp.sync.parse_game", flaky_parse)
+    results = run(CFG, **deps)
+    assert [(r.game_id, r.status) for r in results] == [(28819, Status.FAILED_PARSE_ERROR), (28852, Status.SYNCED)]
+    assert "list index out of range" in results[0].warnings[0]

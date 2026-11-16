@@ -215,3 +215,9 @@ def test_dry_run_writes_no_state(ctx, box):
     sync_game(ctx, box, [EVENT])
     assert ctx.store.get(28819) is None
     assert "event_stats" not in ctx.client.names()
+
+
+def test_parse_warnings_reach_the_result(ctx, box):
+    r = sync_game(ctx, replace(box, parse_warnings=("AHA goalies couldn't be read (x); skipped",)), [EVENT])
+    assert r.status is Status.SYNCED_WITH_WARNINGS
+    assert "AHA goalies couldn't be read (x); skipped" in r.warnings

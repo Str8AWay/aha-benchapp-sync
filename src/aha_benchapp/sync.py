@@ -11,7 +11,7 @@ from aha_benchapp.aha import completed_game_ids, fetch, parse_game
 from aha_benchapp.benchapp import BenchAppClient, BenchAppError
 from aha_benchapp.config import Config
 from aha_benchapp.matching import event_candidates, our_side, resolve_opponent, resolve_ours
-from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, ManualEntryRequired, ParseError, Period, Status
+from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, ManualEntryRequired, Period, Status
 from aha_benchapp.state import StateStore
 
 log = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class _Stop(Exception):
 
 def sync_game(ctx: SyncContext, box: BoxScore, events: list[dict]) -> GameResult:
     """Write one AHA game into its BenchApp event. Never raises BenchAppError."""
-    result = GameResult(box.game_id, Status.IN_PROGRESS)
+    result = GameResult(box.game_id, Status.IN_PROGRESS, warnings=list(box.parse_warnings))
     try:
         _GameSync(ctx, box, result).run(events)
     except _Stop as stop:
@@ -299,10 +299,11 @@ def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store
 def _sync_one(ctx: SyncContext, session: requests.Session, game_id: int, events: list[dict]) -> GameResult:
     try:
         box = parse_game(game_id, fetch(f"https://www.ahahockey.com/game/{game_id}", session))
-    except (ParseError, requests.RequestException) as error:
-        result = GameResult(game_id, Status.FAILED_PARSE_ERROR, warnings=[f"couldn't read the AHA page: {error}"])
     except ManualEntryRequired as reason:
         result = GameResult(game_id, Status.FAILED_MANUAL_ENTRY, warnings=[f"enter this game by hand: {reason}"])
+    except Exception as error:  # an unreadable page must not stop the other games
+        log.exception("game %s: couldn't read the AHA page", game_id)
+        result = GameResult(game_id, Status.FAILED_PARSE_ERROR, warnings=[f"couldn't read the AHA page: {error}"])
     else:
         return sync_game(ctx, box, events)
     _save(ctx, result)

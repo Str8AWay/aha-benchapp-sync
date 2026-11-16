@@ -48,6 +48,7 @@ class BoxScore:
     penalties: tuple[Penalty, ...]
     shots: dict[str, dict[Period, int]]  # {} when AHA hasn't posted shots
     goalies: dict[str, AhaPlayer]
+    parse_warnings: tuple[str, ...] = ()  # stats sections that couldn't be read
 
 
 class Status(str, Enum):

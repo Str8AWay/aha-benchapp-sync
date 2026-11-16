@@ -82,3 +82,40 @@ def test_parse_game_without_shots_table():  # Review Focus 4
 def test_parse_game_unrecognized_page():
     with pytest.raises(ParseError):
         parse_game(1, "<html><body>nothing here</body></html>")
+
+
+def _without_section_rows(html: str, headline: str, rows: str) -> str:
+    """Replace the tbody of the table after `headline` with `rows`."""
+    start = html.index(f'<h3 class="headline">{headline}</h3>')
+    body_start = html.index("<tbody>", start) + len("<tbody>")
+    body_end = html.index("</tbody>", body_start)
+    return html[:body_start] + rows + html[body_end:]
+
+
+def test_parse_game_bad_shots_section_is_a_warning():
+    html = _without_section_rows(fixture("aha_game_28819.html"), "Shots on Goal",
+                                 "<tr><td>Les Etoiles du Nord C1</td><td></td><td></td><td></td><td></td></tr>")
+    box = parse_game(28819, html)
+    assert box.shots == {}
+    assert len(box.goals) == 7 and box.final == {LES: 3, MOOSE: 4}
+    assert any("shots" in w.lower() for w in box.parse_warnings)
+
+
+def test_parse_game_goalie_placeholder_row_is_a_warning():
+    html = _without_section_rows(fixture("aha_game_28819.html"), "Goalies",
+                                 '<tr><td colspan="5">No goalies recorded</td></tr>')
+    box = parse_game(28819, html)
+    assert box.goalies == {}
+    assert any("goalies" in w.lower() for w in box.parse_warnings)
+
+
+def test_parse_game_bad_penalty_row_is_a_warning():
+    html = _without_section_rows(fixture("aha_game_28819.html"), "Penalties",
+                                 "<tr><td>#23. A. Cleary</td><td>Moose C1</td><td>Hooking</td><td>9</td><td>2</td><td>11:07</td></tr>")
+    box = parse_game(28819, html)
+    assert box.penalties == ()
+    assert any("penalties" in w.lower() for w in box.parse_warnings)
+
+
+def test_parse_game_clean_page_has_no_parse_warnings():
+    assert parse_game(28819, fixture("aha_game_28819.html")).parse_warnings == ()

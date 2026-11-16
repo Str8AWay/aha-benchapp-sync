@@ -58,6 +58,19 @@ def parse_game(game_id: int, html: str) -> BoxScore:
                 f"{team}'s final score is {final[team]} but AHA lists {listed} goals (forfeit?)"
             )
 
+    # Stats sections are best effort: a quirk in one must not block the score.
+    warnings: list[str] = []
+
+    def section(name, parse, empty):
+        try:
+            return parse()
+        except (ParseError, IndexError, ValueError) as error:
+            warnings.append(f"AHA {name} couldn't be read ({error}); skipped")
+            return empty
+
+    penalties = section("penalties", lambda: tuple(_parse_penalty(c, teams) for c in _rows(tables.get("Penalties"))), ())
+    shots = section("shots", lambda: _parse_shots(tables.get("Shots on Goal"), teams), {})
+    goalies = section("goalies", lambda: _parse_goalies(tables.get("Goalies"), teams), {})
     return BoxScore(
         game_id=game_id,
         date=_parse_date(soup),
@@ -65,9 +78,10 @@ def parse_game(game_id: int, html: str) -> BoxScore:
         team_ids=team_ids,
         final=final,
         goals=goals,
-        penalties=tuple(_parse_penalty(c, teams) for c in _rows(tables.get("Penalties"))),
-        shots=_parse_shots(tables.get("Shots on Goal"), teams),
-        goalies=_parse_goalies(tables.get("Goalies"), teams),
+        penalties=penalties,
+        shots=shots,
+        goalies=goalies,
+        parse_warnings=tuple(warnings),
     )
 
 
@@ -141,6 +155,8 @@ def _parse_shots(table, teams: tuple[str, str]) -> dict[str, dict[Period, int]]:
     columns = _period_columns(table)
     shots = {}
     for cells in _rows(table):
+        if len(cells) != len(columns) + 1:
+            raise ParseError(f"unexpected shots row {cells}")
         team, counts = cells[0], cells[1:]
         shots[_team(team, teams)] = {
             period: _int(count) for period, count in zip(columns, counts) if period is not None
@@ -151,6 +167,8 @@ def _parse_shots(table, teams: tuple[str, str]) -> dict[str, dict[Period, int]]:
 def _parse_goalies(table, teams: tuple[str, str]) -> dict[str, AhaPlayer]:
     goalies: dict[str, AhaPlayer] = {}
     for cells in _rows(table):
+        if len(cells) != 5:
+            raise ParseError(f"unexpected goalie row {cells}")
         goalies.setdefault(_team(cells[1], teams), _player(cells[0]))  # first listed is the starter
     return goalies
 
