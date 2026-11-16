@@ -1,12 +1,17 @@
 """Copy AHA box scores into BenchApp's scorekeeper."""
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import NoReturn
 
+import requests
+
 from aha_benchapp import enums
+from aha_benchapp.aha import completed_game_ids, fetch, parse_game
 from aha_benchapp.benchapp import BenchAppClient, BenchAppError
+from aha_benchapp.config import Config
 from aha_benchapp.matching import event_candidates, our_side, resolve_opponent, resolve_ours
-from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, Period, Status
+from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, ManualEntryRequired, ParseError, Period, Status
 from aha_benchapp.state import StateStore
 
 log = logging.getLogger(__name__)
@@ -255,3 +260,50 @@ class _GameSync:
         log.error("game %s: %s", self.box.game_id, error)
         self.result.warnings.append(str(error))
         raise _Stop(status)
+
+
+MAX_GAMES_PER_RUN = 20
+
+
+def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store: StateStore, notifier,
+        credentials: Callable[[], tuple[str, str]], only_game: int | None = None) -> list[GameResult]:
+    """Sync every completed AHA game that isn't finished in state. Login errors propagate."""
+    game_ids = [only_game] if only_game else completed_game_ids(fetch(cfg.aha_team_url, session))
+    priors = {game_id: (prior.status if (prior := store.get(game_id)) else None) for game_id in game_ids}
+    results: list[GameResult] = []
+    pending: list[int] = []
+    for game_id in game_ids:
+        prior = store.get(game_id)
+        if prior is None or prior.status.retryable:
+            pending.append(game_id)
+        elif prior.status is Status.IN_PROGRESS:
+            prior.status = Status.NEEDS_CLEANUP
+            prior.warnings.insert(0, "a previous run stopped partway through this game")
+            if not cfg.dry_run:
+                store.put(prior)
+            results.append(prior)
+    pending = pending[:MAX_GAMES_PER_RUN]
+
+    if pending:
+        client.login(*credentials())
+        events = client.events(cfg.benchapp_team_id)
+        ctx = SyncContext(client, store, cfg.benchapp_team_id, cfg.aha_team_id, cfg.dry_run)
+        for game_id in pending:
+            results.append(_sync_one(ctx, session, game_id, events))
+            log.info("game %s: %s", game_id, results[-1].status.value)
+
+    notifier.notify(results, {r.game_id: priors.get(r.game_id) for r in results})
+    return results
+
+
+def _sync_one(ctx: SyncContext, session: requests.Session, game_id: int, events: list[dict]) -> GameResult:
+    try:
+        box = parse_game(game_id, fetch(f"https://www.ahahockey.com/game/{game_id}", session))
+    except (ParseError, requests.RequestException) as error:
+        result = GameResult(game_id, Status.FAILED_PARSE_ERROR, warnings=[f"couldn't read the AHA page: {error}"])
+    except ManualEntryRequired as reason:
+        result = GameResult(game_id, Status.FAILED_MANUAL_ENTRY, warnings=[f"enter this game by hand: {reason}"])
+    else:
+        return sync_game(ctx, box, events)
+    _save(ctx, result)
+    return result

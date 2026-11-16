@@ -4,7 +4,7 @@ import itertools
 from aha_benchapp.benchapp import BenchAppError
 
 LES_BA, MOOSE_BA = 1247980, 1528241
-OUR_NUMBERS = ["5", "10", "12", "16", "21", "24", "36", "37", "43", "55", "80", "89", "94"]
+OUR_NUMBERS = ["5", "10", "12", "16", "20", "21", "24", "36", "37", "43", "55", "80", "89", "92", "94"]  # real roster minus inactive
 
 EVENT = {
     "id": 3766427,
@@ -14,6 +14,16 @@ EVENT = {
     "awayTeam": {"id": MOOSE_BA, "name": "Moose C1"},
     "season": {"id": 531381},
     "dateAndTime": {"date": "2026-11-08", "time": "16:20:00", "full": "2026-11-08 16:20:00", "status": "Past"},
+}
+
+
+SLED_EVENT = {
+    **EVENT,
+    "id": 3766428,
+    "homeOrAway": "Away",
+    "homeTeam": {"id": 1528300, "name": "Sled Dogs"},
+    "awayTeam": {"id": LES_BA, "name": "C1 Les Etoiles du Nord"},
+    "dateAndTime": {"date": "2026-11-13", "time": "20:00:00", "full": "2026-11-13 20:00:00", "status": "Past"},
 }
 
 
@@ -46,28 +56,40 @@ class FakeClient:
     def names(self) -> list[str]:
         return [name for name, _ in self.calls]
 
+    def login(self, email, password):
+        self._record("login", email)
+
+    def events(self, team_id):
+        self._record("events", team_id)
+        return [SLED_EVENT, EVENT]
+
     def has_points(self, event_id):
         self._record("has_points", event_id)
         return self.has_points_value
 
     def game_sheet(self, event_id):
         self._record("game_sheet", event_id)
-        return {
-            "homeTeam": {"team": EVENT["homeTeam"], "players": self.home_players},
-            "awayTeam": {"team": EVENT["awayTeam"], "players": self.away_players},
-        }
+        event = SLED_EVENT if event_id == SLED_EVENT["id"] else EVENT
+        ours, theirs = {"team": {"id": LES_BA}, "players": self.home_players}, {"players": self.away_players}
+        if event["homeTeam"]["id"] == LES_BA:
+            return {"homeTeam": ours, "awayTeam": {**theirs, "team": event["awayTeam"]}}
+        return {"homeTeam": {**theirs, "team": event["homeTeam"]}, "awayTeam": ours}
 
     def event_stats(self, event_id):
         self._record("event_stats", event_id)
         if self.stats_override is not None:
             return self.stats_override
 
+        event = SLED_EVENT if event_id == SLED_EVENT["id"] else EVENT
+        home, away = event["homeTeam"]["id"], event["awayTeam"]["id"]
+
         def count(method, team_id):
-            return sum(1 for name, args in self.calls if name == method and args[_TEAM_ARG[method]] == team_id)
+            return sum(1 for name, args in self.calls
+                       if name == method and args[0] == event_id and args[_TEAM_ARG[method]] == team_id)
 
         return {
-            "homeTeamScore": count("create_point", LES_BA), "awayTeamScore": count("create_point", MOOSE_BA),
-            "homeTeamShots": count("create_shot", LES_BA), "awayTeamShots": count("create_shot", MOOSE_BA),
+            "homeTeamScore": count("create_point", home), "awayTeamScore": count("create_point", away),
+            "homeTeamShots": count("create_shot", home), "awayTeamShots": count("create_shot", away),
         }
 
     def create_roster_player(self, team_id, season_id, name, number):
