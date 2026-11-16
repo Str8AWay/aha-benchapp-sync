@@ -1,0 +1,10 @@
+bin/
+lib/
+include/
+pyvenv.cfg
+recon/
+__pycache__/
+.aws-sam/
+.superpowers/
+.claude/
+samconfig.toml
