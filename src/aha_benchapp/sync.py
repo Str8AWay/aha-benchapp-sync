@@ -11,7 +11,8 @@ from aha_benchapp import enums
 from aha_benchapp.aha import completed_game_ids, fetch, parse_game
 from aha_benchapp.benchapp import BenchAppClient, BenchAppError
 from aha_benchapp.config import Config
-from aha_benchapp.matching import event_candidates, find_our_temp, our_side, resolve_opponent, resolve_ours
+from aha_benchapp.matching import (event_candidates, find_our_temp, number_shared_by, our_side, resolve_opponent,
+                                   resolve_ours)
 from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, ManualEntryRequired, Period, Status
 from aha_benchapp.state import StateStore
 
@@ -157,12 +158,18 @@ class _GameSync:
             player_id = self.client.create_roster_player(side.team_id, self.season_id, player.name, player.number)
             self.client.set_attendance(self.event["id"], self.season_id, side.team_id, player_id)
             if side.ours:
-                self.result.warnings.append(
-                    f"#{player.number} {player.name} isn't on the BenchApp roster; entered as a temp player"
-                )
+                self.result.warnings.append(f"#{player.number} {player.name} {self._why_unmatched(side, player)}; "
+                                            "entered as a temp player")
         elif side.ours and self._status(side, player_id) != "In":
             self.client.set_attendance(self.event["id"], self.season_id, side.team_id, player_id)
         self.player_ids[key] = player_id
+
+    @staticmethod
+    def _why_unmatched(side: _Side, player: AhaPlayer) -> str:
+        shared = number_shared_by(side.players, player)
+        if shared > 1:
+            return f"couldn't be told apart: {shared} BenchApp players share #{player.number}"
+        return "isn't on the BenchApp roster"
 
     @staticmethod
     def _status(side: _Side, player_id: int) -> str:

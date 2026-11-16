@@ -32,16 +32,34 @@ def our_side(event: dict, team_id: int) -> str:
 
 
 def resolve_ours(players: list[dict], p: AhaPlayer, *, goalie: bool = False) -> int | None:
-    """Our rostered player with p's jersey number (names are nicknames in BenchApp, so they're ignored).
+    """Our rostered player with p's jersey number.
 
-    Temp players aren't considered: they're matched by name with find_our_temp.
+    Names are often nicknames in BenchApp, so they're only used to break a tie
+    when two rostered players share the number. Temp players aren't considered:
+    they're matched by name with find_our_temp.
     """
-    if not p.number:
-        return None
-    matches = [player for player in players if not player.get("temp") and _number(player) == p.number]
+    matches = _rostered_with_number(players, p)
+    if len(matches) > 1:
+        matches = [player for player in matches if _last_name(_name(player)) == _last_name(p.name.lower())]
     if len(matches) != 1 or (goalie and not matches[0]["isGoalie"]):
         return None
     return matches[0]["playerId"]
+
+
+def number_shared_by(players: list[dict], p: AhaPlayer) -> int:
+    """How many rostered players wear p's number."""
+    return len(_rostered_with_number(players, p))
+
+
+def _rostered_with_number(players: list[dict], p: AhaPlayer) -> list[dict]:
+    if not p.number:
+        return []
+    return [player for player in players if not player.get("temp") and _number(player) == p.number]
+
+
+def _last_name(name: str) -> str:
+    words = name.split()
+    return words[-1] if words else ""
 
 
 def find_our_temp(players: list[dict], p: AhaPlayer) -> int | None:

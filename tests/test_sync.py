@@ -310,3 +310,9 @@ def test_unexpected_error_after_score_verified_is_a_warning(ctx, box, monkeypatc
     assert r.status is Status.SYNCED_WITH_WARNINGS
     assert any("bad goalie response" in w for w in r.warnings)
     assert "create_shot" in ctx.client.names()  # the remaining stats still went in
+
+
+def test_unresolvable_shared_number_warns_clearly(ctx, box):
+    ctx.client.home_players = ctx.client.home_players + [{**roster_player("43"), "playerId": 7043, "playerName": "Other Guy"}]
+    r = sync_game(ctx, box, [EVENT])  # AHA #43 is "Z. Brodsky"; neither BenchApp #43 is named Brodsky
+    assert any("#43 Z. Brodsky" in w and "2 BenchApp players share #43" in w for w in r.warnings)

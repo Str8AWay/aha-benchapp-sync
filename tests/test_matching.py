@@ -1,7 +1,8 @@
 import json
 from datetime import date
 
-from aha_benchapp.matching import event_candidates, find_our_temp, normalize_team, our_side, resolve_opponent, resolve_ours
+from aha_benchapp.matching import (event_candidates, find_our_temp, normalize_team, number_shared_by, our_side,
+                                   resolve_opponent, resolve_ours)
 from aha_benchapp.models import AhaPlayer
 from tests import fixture
 
@@ -68,9 +69,9 @@ def test_resolve_ours_numberless_player_is_unmatched():
     assert resolve_ours([sheet_player(1, "", "A")], AhaPlayer("", "A")) is None
 
 
-def test_resolve_ours_duplicate_number_is_unmatched():
+def test_resolve_ours_duplicate_number_without_name_match_is_unmatched():
     roster = [sheet_player(1, "5", "A"), sheet_player(2, "5", "B")]
-    assert resolve_ours(roster, AhaPlayer("5", "A")) is None
+    assert resolve_ours(roster, AhaPlayer("5", "Z. Other")) is None
 
 
 def test_resolve_ours_zero_vs_double_zero():
@@ -124,3 +125,20 @@ def test_matching_tolerates_players_without_number_or_name():  # real B3 roster 
     assert find_our_temp(roster, AhaPlayer("", "A. Ledo")) is None
     assert resolve_opponent(roster, AhaPlayer("5", "R. Steckman")) == 3
     assert resolve_opponent(roster, AhaPlayer("7", "X. Nobody")) is None
+
+
+def test_shared_number_resolved_by_last_name():  # two rostered players can share a number
+    roster = [sheet_player(1, "14", "Pat Anderson"), sheet_player(2, "14", "Lee Other")]
+    assert resolve_ours(roster, AhaPlayer("14", "B. Anderson")) == 1
+    assert resolve_ours(roster, AhaPlayer("14", "X. Nobody")) is None
+
+
+def test_shared_number_and_last_name_stays_unmatched():
+    roster = [sheet_player(1, "14", "Pat Anderson"), sheet_player(2, "14", "Sam Anderson")]
+    assert resolve_ours(roster, AhaPlayer("14", "B. Anderson")) is None
+
+
+def test_number_shared_by():
+    roster = [sheet_player(1, "14", "A"), sheet_player(2, "14", "B"), sheet_player(3, "5", "C")]
+    assert number_shared_by(roster, AhaPlayer("14", "Z")) == 2
+    assert number_shared_by(roster, AhaPlayer("5", "C")) == 1
