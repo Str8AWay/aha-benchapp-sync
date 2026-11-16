@@ -127,3 +127,12 @@ def test_run_survives_unexpected_parser_crash(aha, deps, monkeypatch):
     results = run(CFG, **deps)
     assert [(r.game_id, r.status) for r in results] == [(28819, Status.FAILED_PARSE_ERROR), (28852, Status.SYNCED)]
     assert "list index out of range" in results[0].warnings[0]
+
+
+def test_run_stops_before_a_game_when_time_runs_low(aha, deps):  # review I-4
+    serve_game(aha, 28819)
+    serve_game(aha, 28852)
+    budget = iter([500.0, 100.0])
+    results = run(CFG, **deps, seconds_left=lambda: next(budget))
+    assert [r.game_id for r in results] == [28819]
+    assert deps["store"].get(28852) is None  # untouched; picked up next run

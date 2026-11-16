@@ -65,3 +65,19 @@ def test_handler_dry_run_uses_log_notifier(monkeypatch):
     monkeypatch.setattr(handler, "run", recording_run)
     handler.lambda_handler({}, None)
     assert isinstance(seen["notifier"], handler.LogNotifier)
+
+
+def test_handler_passes_lambda_time_budget(monkeypatch):
+    seen = {}
+
+    def recording_run(cfg, **deps):
+        seen["left"] = deps["seconds_left"]()
+        return []
+
+    class Context:
+        def get_remaining_time_in_millis(self):
+            return 250_000
+
+    monkeypatch.setattr(handler, "run", recording_run)
+    handler.lambda_handler({}, Context())
+    assert seen["left"] == 250.0

@@ -24,6 +24,7 @@ def lambda_handler(event, context) -> dict:
             store=DynamoStateStore(cfg.state_table),
             notifier=LogNotifier() if cfg.dry_run or sns is None else sns,
             credentials=lambda: load_credentials(cfg.secret_id),
+            seconds_left=lambda: context.get_remaining_time_in_millis() / 1000,
         )
     except Exception as error:
         if sns and not cfg.dry_run:

@@ -275,11 +275,17 @@ class _GameSync:
 
 
 MAX_GAMES_PER_RUN = 20
+MIN_SECONDS_PER_GAME = 120  # headroom for one game's ~100 BenchApp calls
 
 
 def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store: StateStore, notifier,
-        credentials: Callable[[], tuple[str, str]], only_game: int | None = None) -> list[GameResult]:
-    """Sync every completed AHA game that isn't finished in state. Login errors propagate."""
+        credentials: Callable[[], tuple[str, str]], only_game: int | None = None,
+        seconds_left: Callable[[], float] | None = None) -> list[GameResult]:
+    """Sync every completed AHA game that isn't finished in state. Login errors propagate.
+
+    With `seconds_left`, stops before a game that might not finish in time; the
+    rest are picked up next run.
+    """
     game_ids = [only_game] if only_game else completed_game_ids(fetch(cfg.aha_team_url, session))
     priors = {game_id: (prior.status if (prior := store.get(game_id)) else None) for game_id in game_ids}
     results: list[GameResult] = []
@@ -301,6 +307,9 @@ def run(cfg: Config, *, session: requests.Session, client: BenchAppClient, store
         events = client.events(cfg.benchapp_team_id)
         ctx = SyncContext(client, store, cfg.benchapp_team_id, cfg.aha_team_id, cfg.dry_run)
         for game_id in pending:
+            if seconds_left and seconds_left() < MIN_SECONDS_PER_GAME:
+                log.warning("stopping before game %s to stay within the time limit", game_id)
+                break
             results.append(_sync_one(ctx, session, game_id, events))
             log.info("game %s: %s", game_id, results[-1].status.value)
 
