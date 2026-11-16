@@ -1,0 +1,32 @@
+version = 0.1
+# Copy to samconfig.toml (git-ignored) and set your values; "b3" is an example second team.
+
+[default.deploy.parameters]
+stack_name = "aha-benchapp-sync"
+resolve_s3 = true
+capabilities = ["CAPABILITY_IAM"]
+confirm_changeset = false
+fail_on_empty_changeset = false
+
+[default.deploy.parameters.parameter_overrides]
+NotifyEmail = "you@example.com"
+DryRun = "false"
+
+[default.global.parameters]
+region = "us-east-1"
+
+[b3.deploy.parameters]
+stack_name = "aha-benchapp-sync-b3-du-nord"
+resolve_s3 = true
+capabilities = ["CAPABILITY_IAM"]
+confirm_changeset = false
+fail_on_empty_changeset = false
+
+[b3.deploy.parameters.parameter_overrides]
+AhaTeamUrl = "https://www.ahahockey.com/team/les-etoiles-du-nord-b3/1363"
+BenchAppTeamId = "1289694"
+NotifyEmail = "you@example.com"
+DryRun = "false"
+
+[b3.global.parameters]
+region = "us-east-1"
