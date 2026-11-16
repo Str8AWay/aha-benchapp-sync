@@ -10,7 +10,7 @@ from aha_benchapp import enums
 from aha_benchapp.aha import completed_game_ids, fetch, parse_game
 from aha_benchapp.benchapp import BenchAppClient, BenchAppError
 from aha_benchapp.config import Config
-from aha_benchapp.matching import event_candidates, our_side, resolve_opponent, resolve_ours
+from aha_benchapp.matching import event_candidates, find_our_temp, our_side, resolve_opponent, resolve_ours
 from aha_benchapp.models import AhaPlayer, BoxScore, GameResult, ManualEntryRequired, Period, Status
 from aha_benchapp.state import StateStore
 
@@ -136,6 +136,10 @@ class _GameSync:
             return
         if side.ours:
             player_id = resolve_ours(side.players, player, goalie=goalie)
+            if player_id is None and (player_id := find_our_temp(side.players, player)) is not None:
+                self.result.warnings.append(
+                    f"#{player.number} {player.name} isn't on the BenchApp roster; credited to their existing temp player"
+                )
         else:
             player_id = resolve_opponent(side.players, player)
         if player_id is None:

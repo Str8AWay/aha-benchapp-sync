@@ -1,7 +1,7 @@
 import json
 from datetime import date
 
-from aha_benchapp.matching import event_candidates, normalize_team, our_side, resolve_opponent, resolve_ours
+from aha_benchapp.matching import event_candidates, find_our_temp, normalize_team, our_side, resolve_opponent, resolve_ours
 from aha_benchapp.models import AhaPlayer
 from tests import fixture
 
@@ -103,3 +103,14 @@ def test_event_candidates_skips_events_without_two_teams():
                 "dateAndTime": {"date": "2026-11-08", "time": "10:00:00", "full": "2026-11-08 10:00:00", "status": "Past"}}
     game = make_event(1, "2026-11-08", (LES, "C1 Les Etoiles du Nord"), (1528241, "Moose C1"))
     assert event_candidates([practice, game], date(2026, 11, 8), "Moose C1", LES) == [game]
+
+
+def test_resolve_ours_ignores_temp_players():  # review I-3: temps are matched by name, never by number
+    roster = [sheet_player(1, "17", "X. Sub", temp=True)]
+    assert resolve_ours(roster, AhaPlayer("17", "X. Sub")) is None
+
+
+def test_find_our_temp_by_name():
+    roster = [sheet_player(1, "", "A. Ledo", temp=True), sheet_player(2, "30", "A. Ledo")]
+    assert find_our_temp(roster, AhaPlayer("", "a. ledo")) == 1
+    assert find_our_temp(roster, AhaPlayer("", "B. Nobody")) is None

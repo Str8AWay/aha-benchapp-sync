@@ -32,13 +32,25 @@ def our_side(event: dict, team_id: int) -> str:
 
 
 def resolve_ours(players: list[dict], p: AhaPlayer, *, goalie: bool = False) -> int | None:
-    """Our roster player with p's jersey number (names are nicknames in BenchApp, so they're ignored)."""
+    """Our rostered player with p's jersey number (names are nicknames in BenchApp, so they're ignored).
+
+    Temp players aren't considered: they're matched by name with find_our_temp.
+    """
     if not p.number:
         return None
-    matches = [player for player in players if player["playerNumberDisplay"].strip() == p.number]
+    matches = [
+        player for player in players
+        if not player.get("temp") and player["playerNumberDisplay"].strip() == p.number
+    ]
     if len(matches) != 1 or (goalie and not matches[0]["isGoalie"]):
         return None
     return matches[0]["playerId"]
+
+
+def find_our_temp(players: list[dict], p: AhaPlayer) -> int | None:
+    """A temp player an earlier sync created on our team for this AHA name."""
+    matches = [player for player in players if player.get("temp") and player["playerName"].strip().lower() == p.name.lower()]
+    return matches[0]["playerId"] if len(matches) == 1 else None
 
 
 def resolve_opponent(players: list[dict], p: AhaPlayer) -> int | None:

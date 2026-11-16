@@ -5,7 +5,7 @@ import pytest
 from aha_benchapp import sync
 from aha_benchapp.benchapp import BenchAppError
 from aha_benchapp.aha import parse_game
-from aha_benchapp.models import Period, Status
+from aha_benchapp.models import AhaPlayer, Period, Status
 from aha_benchapp.state import MemoryStateStore
 from aha_benchapp.sync import SyncContext, sync_game
 from tests import fixture
@@ -246,3 +246,21 @@ def test_first_goal_failure_recheck_error_needs_cleanup(ctx, box):  # can't tell
 
     ctx.client.has_scorekeeping = flaky
     assert sync_game(ctx, box, [EVENT]).status is Status.NEEDS_CLEANUP
+
+
+def test_sub_goalie_reuses_our_existing_temp(ctx, box):  # review I-3
+    ledo = AhaPlayer("", "A. Ledo")
+    ctx.client.home_players = ctx.client.home_players + [{**roster_player("99", temp=True), "playerId": 555,
+                                                          "playerNumberDisplay": "", "playerName": "A. Ledo"}]
+    r = sync_game(ctx, replace(box, goalies={**box.goalies, LES: ledo}), [EVENT])
+    assert not any(a[0] == LES_BA for a in calls(ctx, "create_roster_player"))
+    assert (3766427, LES_BA, 555) in calls(ctx, "create_goalie")
+    assert any("A. Ledo" in w and "temp player" in w for w in r.warnings)
+
+
+def test_numbered_temp_on_our_side_is_not_matched_by_number(ctx, box):
+    ctx.client.home_players = [p for p in ctx.client.home_players if p["playerNumberDisplay"] != "43"] + [
+        {**roster_player("43", temp=True), "playerName": "Z. Brodsky"}]
+    r = sync_game(ctx, box, [EVENT])
+    assert not any(a[0] == LES_BA for a in calls(ctx, "create_roster_player"))  # reused by name
+    assert any("#43" in w and "temp player" in w for w in r.warnings)
