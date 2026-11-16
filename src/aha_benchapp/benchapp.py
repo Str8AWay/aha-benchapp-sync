@@ -64,8 +64,12 @@ class BenchAppClient:
             "awayTeamShots": shot_teams.count(event["awayTeam"]["id"]),
         }
 
-    def has_points(self, event_id: int) -> bool:
-        return bool(self._call("scorekeeperPointsAndPenalties", {"eventId": event_id})["eventPointsAndPenalties"]["points"])
+    def has_scorekeeping(self, event_id: int) -> bool:
+        """Whether anyone has entered goals, penalties, or shots for this event."""
+        entered = self._call("scorekeeperPointsAndPenalties", {"eventId": event_id})["eventPointsAndPenalties"]
+        if entered["points"] or entered["penalties"]:
+            return True
+        return bool(self._call("scorekeeperEvent", {"eventId": event_id})["event"]["shots"])
 
     # Writes (logged, not sent, in dry run)
 

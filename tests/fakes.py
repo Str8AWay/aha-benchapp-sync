@@ -39,7 +39,8 @@ def our_roster():
 class FakeClient:
     def __init__(self):
         self.calls: list[tuple[str, tuple]] = []
-        self.has_points_value = False
+        self.has_scorekeeping_value = False
+        self.failure_lands = False  # the failing write was saved by BenchApp anyway (e.g. a timeout)
         self.home_players = our_roster()
         self.away_players: list[dict] = []
         self.stats_override: dict | None = None
@@ -50,6 +51,8 @@ class FakeClient:
     def _record(self, method: str, *args):
         self._counts[method] = self._counts.get(method, 0) + 1
         if self.fail_on == (method, self._counts[method]):
+            if self.failure_lands:
+                self.calls.append((method, args))
             raise BenchAppError(f"{method}: simulated failure")
         self.calls.append((method, args))
 
@@ -63,9 +66,11 @@ class FakeClient:
         self._record("events", team_id)
         return [SLED_EVENT, EVENT]
 
-    def has_points(self, event_id):
-        self._record("has_points", event_id)
-        return self.has_points_value
+    def has_scorekeeping(self, event_id):
+        self._record("has_scorekeeping", event_id)
+        written = any(name.startswith(("create_point", "create_penalty", "create_shot")) and args[0] == event_id
+                      for name, args in self.calls)
+        return self.has_scorekeeping_value or written
 
     def game_sheet(self, event_id):
         self._record("game_sheet", event_id)

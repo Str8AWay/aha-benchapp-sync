@@ -3,6 +3,7 @@ from dataclasses import replace
 import pytest
 
 from aha_benchapp import sync
+from aha_benchapp.benchapp import BenchAppError
 from aha_benchapp.aha import parse_game
 from aha_benchapp.models import Period, Status
 from aha_benchapp.state import MemoryStateStore
@@ -86,7 +87,7 @@ def test_goalies_penalty_shots_and_period(ctx, box):
 
 
 def test_skips_event_with_existing_points(ctx, box):
-    ctx.client.has_points_value = True
+    ctx.client.has_scorekeeping_value = True
     r = sync_game(ctx, box, [EVENT])
     assert r.status is Status.SKIPPED_EXISTING and r.event_id == 3766427
     assert mutations(ctx) == []
@@ -133,7 +134,7 @@ def test_api_error_before_any_goal_is_retryable(ctx, box):
 
 
 def test_api_error_reading_event_is_retryable(ctx, box):
-    ctx.client.fail_on = ("has_points", 1)
+    ctx.client.fail_on = ("has_scorekeeping", 1)
     assert sync_game(ctx, box, [EVENT]).status is Status.FAILED_API_ERROR
 
 
@@ -221,3 +222,27 @@ def test_parse_warnings_reach_the_result(ctx, box):
     r = sync_game(ctx, replace(box, parse_warnings=("AHA goalies couldn't be read (x); skipped",)), [EVENT])
     assert r.status is Status.SYNCED_WITH_WARNINGS
     assert "AHA goalies couldn't be read (x); skipped" in r.warnings
+
+
+def test_first_goal_failure_that_landed_needs_cleanup(ctx, box):  # review I-1
+    ctx.client.fail_on = ("create_point", 1)
+    ctx.client.failure_lands = True
+    r = sync_game(ctx, box, [EVENT])
+    assert r.status is Status.NEEDS_CLEANUP
+    assert any("simulated failure" in w for w in r.warnings)
+
+
+def test_first_goal_failure_recheck_error_needs_cleanup(ctx, box):  # can't tell whether it landed
+    ctx.client.fail_on = ("create_point", 1)
+    ctx.client.has_scorekeeping_value = False
+    calls = {"n": 0}
+    real = ctx.client.has_scorekeeping
+
+    def flaky(event_id):
+        calls["n"] += 1
+        if calls["n"] == 2:
+            raise BenchAppError("scorekeeperPointsAndPenalties: timeout")
+        return real(event_id)
+
+    ctx.client.has_scorekeeping = flaky
+    assert sync_game(ctx, box, [EVENT]).status is Status.NEEDS_CLEANUP

@@ -102,7 +102,7 @@ class _GameSync:
 
     def _read_event(self) -> None:
         try:
-            if self.client.has_points(self.event["id"]):
+            if self.client.has_scorekeeping(self.event["id"]):
                 raise _Stop(Status.SKIPPED_EXISTING)
             sheet = self.client.game_sheet(self.event["id"])
         except BenchAppError as error:
@@ -168,10 +168,18 @@ class _GameSync:
                     point_type=enums.point_type(goal.strength),
                 )
             except BenchAppError as error:
-                status = Status.NEEDS_CLEANUP if self.result.created_point_ids else Status.FAILED_API_ERROR
-                self._api_failure(error, status)
+                self._api_failure(error, Status.NEEDS_CLEANUP if self._may_have_written() else Status.FAILED_API_ERROR)
             self.result.created_point_ids.append(point_id)
             _save(self.ctx, self.result)
+
+    def _may_have_written(self) -> bool:
+        """After a failed goal write: could BenchApp hold some of this game now? (A timeout may still land.)"""
+        if self.result.created_point_ids:
+            return True
+        try:
+            return self.client.has_scorekeeping(self.event["id"])
+        except BenchAppError:
+            return True  # can't tell, so assume the worst
 
     def _verify_score(self) -> None:
         if self.ctx.dry_run:

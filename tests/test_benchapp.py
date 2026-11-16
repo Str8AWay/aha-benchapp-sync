@@ -108,11 +108,31 @@ def test_event_stats_counts_shots_per_team(http, client):
     }
 
 
-def test_has_points(http, client):
+EMPTY_EVENT = {"data": {"event": {"id": 3766428, "period": "One", "stats": {"homeTeamScore": 0, "awayTeamScore": 0},
+                                 "homeTeam": {"id": 1}, "awayTeam": {"id": 2}, "shots": []}}}
+NOTHING = {"data": {"eventPointsAndPenalties": {"points": [], "penalties": []}}}
+
+
+def test_has_scorekeeping_with_points(http, client):
     http.reply(json.loads(fixture("ba_points_and_penalties.json")))
-    http.reply({"data": {"eventPointsAndPenalties": {"points": [], "penalties": []}}})
-    assert client.has_points(3766427) is True
-    assert client.has_points(3766428) is False
+    assert client.has_scorekeeping(3766427) is True
+
+
+def test_has_scorekeeping_with_only_penalties(http, client):
+    http.reply({"data": {"eventPointsAndPenalties": {"points": [], "penalties": [{"id": 1}]}}})
+    assert client.has_scorekeeping(1) is True
+
+
+def test_has_scorekeeping_with_only_shots(http, client):
+    http.reply(NOTHING)
+    http.reply(json.loads(fixture("ba_scorekeeper_event.json")))
+    assert client.has_scorekeeping(3766427) is True
+
+
+def test_has_scorekeeping_empty_event(http, client):
+    http.reply(NOTHING)
+    http.reply(EMPTY_EVENT)
+    assert client.has_scorekeeping(3766428) is False
 
 
 def test_game_sheet_returns_raw_sheet(http, client):
@@ -135,7 +155,7 @@ def test_events_pages_until_short_page(http, client):
 def test_graphql_errors_raise_with_details(http, client):
     http.reply({"errors": [{"message": "Not authorized", "extensions": {"code": "UNAUTHENTICATED"}}]})
     with pytest.raises(BenchAppError, match="scorekeeperPointsAndPenalties.*Not authorized"):
-        client.has_points(1)
+        client.has_scorekeeping(1)
 
 
 def test_http_error_raises(http, client):

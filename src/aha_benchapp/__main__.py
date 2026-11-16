@@ -1,8 +1,9 @@
 """Run the sync locally: PYTHONPATH=src python -m aha_benchapp [--game ID] [--dry-run]
 
 Reads the same environment variables as the Lambda. State isn't kept between
-runs and notifications are logged, never sent; BenchApp's own "already has
-points" check keeps a live local run from double-entering a game.
+runs and notifications are logged, never sent; the sync skips any BenchApp
+game that already has goals, penalties, or shots, so a live local run can't
+double-enter a game.
 """
 import argparse
 import json
