@@ -264,3 +264,39 @@ def test_numbered_temp_on_our_side_is_not_matched_by_number(ctx, box):
     r = sync_game(ctx, box, [EVENT])
     assert not any(a[0] == LES_BA for a in calls(ctx, "create_roster_player"))  # reused by name
     assert any("#43" in w and "temp player" in w for w in r.warnings)
+
+
+def test_unexpected_error_before_goals_is_retryable(ctx, box, monkeypatch):
+    def broken(*args, **kwargs):
+        raise RuntimeError("unexpected roster shape")
+
+    monkeypatch.setattr(sync, "resolve_ours", broken)
+    r = sync_game(ctx, box, [EVENT])
+    assert r.status is Status.FAILED_API_ERROR and "create_point" not in ctx.client.names()
+    assert any("unexpected roster shape" in w for w in r.warnings)
+    assert ctx.store.get(28819).status is Status.FAILED_API_ERROR
+
+
+def test_unexpected_error_during_goals_needs_cleanup(ctx, box, monkeypatch):
+    real = ctx.client.create_point
+    count = {"n": 0}
+
+    def flaky(*args, **kwargs):
+        count["n"] += 1
+        if count["n"] == 2:
+            raise KeyError("createEventPoint")
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(ctx.client, "create_point", flaky)
+    assert sync_game(ctx, box, [EVENT]).status is Status.NEEDS_CLEANUP
+
+
+def test_unexpected_error_after_score_verified_is_a_warning(ctx, box, monkeypatch):
+    def broken(*args, **kwargs):
+        raise TypeError("bad goalie response")
+
+    monkeypatch.setattr(ctx.client, "create_goalie", broken)
+    r = sync_game(ctx, box, [EVENT])
+    assert r.status is Status.SYNCED_WITH_WARNINGS
+    assert any("bad goalie response" in w for w in r.warnings)
+    assert "create_shot" in ctx.client.names()  # the remaining stats still went in

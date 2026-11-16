@@ -44,16 +44,24 @@ class _Stop(Exception):
 
 
 def sync_game(ctx: SyncContext, box: BoxScore, events: list[dict]) -> GameResult:
-    """Write one AHA game into its BenchApp event. Never raises BenchAppError."""
+    """Write one AHA game into its BenchApp event. Errors become statuses or warnings, never exceptions."""
     result = GameResult(box.game_id, Status.IN_PROGRESS, warnings=list(box.parse_warnings))
     try:
         _GameSync(ctx, box, result).run(events)
     except _Stop as stop:
         result.status = stop.status
+    except Exception as error:  # a surprise anywhere else: don't take the rest of the run down with it
+        log.exception("game %s: unexpected error", box.game_id)
+        result.warnings.append(_describe(error))
+        result.status = Status.NEEDS_CLEANUP if result.created_point_ids else Status.FAILED_API_ERROR
     else:
         result.status = Status.SYNCED_WITH_WARNINGS if result.warnings else Status.SYNCED
     _save(ctx, result)
     return result
+
+
+def _describe(error: Exception) -> str:
+    return str(error) if isinstance(error, BenchAppError) else f"unexpected {type(error).__name__}: {error}"
 
 
 def _save(ctx: SyncContext, result: GameResult) -> None:
@@ -106,7 +114,9 @@ class _GameSync:
             if self.client.has_scorekeeping(self.event["id"]):
                 raise _Stop(Status.SKIPPED_EXISTING)
             sheet = self.client.game_sheet(self.event["id"])
-        except BenchAppError as error:
+        except _Stop:
+            raise
+        except Exception as error:
             self._api_failure(error, Status.FAILED_API_ERROR)
         our_home_away = our_side(self.event, self.ctx.team_id)
         sheet_sides = {"Home": sheet["homeTeam"], "Away": sheet["awayTeam"]}
@@ -127,7 +137,7 @@ class _GameSync:
         try:
             for key in dict.fromkeys(needed):
                 self._resolve(*key)
-        except BenchAppError as error:
+        except Exception as error:
             self._api_failure(error, Status.FAILED_API_ERROR)
 
     def _resolve(self, team: str, player: AhaPlayer, goalie: bool) -> None:
@@ -172,7 +182,7 @@ class _GameSync:
                     goal.time, self._id(goal.team, goal.scorer), tuple(self._id(goal.team, a) for a in goal.assists),
                     point_type=enums.point_type(goal.strength),
                 )
-            except BenchAppError as error:
+            except Exception as error:
                 self._api_failure(error, Status.NEEDS_CLEANUP if self._may_have_written() else Status.FAILED_API_ERROR)
             self.result.created_point_ids.append(point_id)
             _save(self.ctx, self.result)
@@ -183,7 +193,7 @@ class _GameSync:
             return True
         try:
             return self.client.has_scorekeeping(self.event["id"])
-        except BenchAppError:
+        except Exception:
             return True  # can't tell, so assume the worst
 
     def _verify_score(self) -> None:
@@ -191,7 +201,7 @@ class _GameSync:
             return
         try:
             stats = self.client.event_stats(self.event["id"])
-        except BenchAppError as error:
+        except Exception as error:
             self._api_failure(error, Status.NEEDS_CLEANUP)
         expected = {side.home_away: self.box.final[team] for team, side in self.sides.items()}
         actual = {"Home": stats["homeTeamScore"], "Away": stats["awayTeamScore"]}
@@ -245,8 +255,8 @@ class _GameSync:
             return
         try:
             stats = self.client.event_stats(self.event["id"])
-        except BenchAppError as error:
-            self.result.warnings.append(f"couldn't check shot totals: {error}")
+        except Exception as error:
+            self.result.warnings.append(f"couldn't check shot totals: {_describe(error)}")
             return
         for team, side in self.sides.items():
             expected = sum(self.box.shots.get(team, {}).values())
@@ -264,14 +274,14 @@ class _GameSync:
         try:
             write()
             return True
-        except BenchAppError as error:
-            log.error("game %s: %s failed: %s", self.box.game_id, label, error)
-            self.result.warnings.append(f"{label} failed: {error}")
+        except Exception as error:
+            log.error("game %s: %s failed: %s", self.box.game_id, label, _describe(error))
+            self.result.warnings.append(f"{label} failed: {_describe(error)}")
             return False
 
-    def _api_failure(self, error: BenchAppError, status: Status) -> NoReturn:
-        log.error("game %s: %s", self.box.game_id, error)
-        self.result.warnings.append(str(error))
+    def _api_failure(self, error: Exception, status: Status) -> NoReturn:
+        log.error("game %s: %s", self.box.game_id, _describe(error))
+        self.result.warnings.append(_describe(error))
         raise _Stop(status)
 
 

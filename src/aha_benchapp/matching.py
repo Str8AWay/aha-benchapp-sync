@@ -38,10 +38,7 @@ def resolve_ours(players: list[dict], p: AhaPlayer, *, goalie: bool = False) -> 
     """
     if not p.number:
         return None
-    matches = [
-        player for player in players
-        if not player.get("temp") and player["playerNumberDisplay"].strip() == p.number
-    ]
+    matches = [player for player in players if not player.get("temp") and _number(player) == p.number]
     if len(matches) != 1 or (goalie and not matches[0]["isGoalie"]):
         return None
     return matches[0]["playerId"]
@@ -49,18 +46,26 @@ def resolve_ours(players: list[dict], p: AhaPlayer, *, goalie: bool = False) -> 
 
 def find_our_temp(players: list[dict], p: AhaPlayer) -> int | None:
     """A temp player an earlier sync created on our team for this AHA name."""
-    matches = [player for player in players if player.get("temp") and player["playerName"].strip().lower() == p.name.lower()]
+    matches = [player for player in players if player.get("temp") and _name(player) == p.name.lower()]
     return matches[0]["playerId"] if len(matches) == 1 else None
 
 
 def resolve_opponent(players: list[dict], p: AhaPlayer) -> int | None:
     """Opponent roster player by unique number, else by unique name."""
     if p.number:
-        by_number = [player for player in players if player["playerNumberDisplay"].strip() == p.number]
+        by_number = [player for player in players if _number(player) == p.number]
         if len(by_number) == 1:
             return by_number[0]["playerId"]
-    by_name = [player for player in players if player["playerName"].strip().lower() == p.name.lower()]
+    by_name = [player for player in players if _name(player) == p.name.lower()]
     return by_name[0]["playerId"] if len(by_name) == 1 else None
+
+
+def _number(player: dict) -> str:
+    return (player.get("playerNumberDisplay") or "").strip()  # null for players without a number
+
+
+def _name(player: dict) -> str:
+    return (player.get("playerName") or "").strip().lower()
 
 
 def _other_team(event: dict, team_id: int) -> dict:

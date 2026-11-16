@@ -114,3 +114,13 @@ def test_find_our_temp_by_name():
     roster = [sheet_player(1, "", "A. Ledo", temp=True), sheet_player(2, "30", "A. Ledo")]
     assert find_our_temp(roster, AhaPlayer("", "a. ledo")) == 1
     assert find_our_temp(roster, AhaPlayer("", "B. Nobody")) is None
+
+
+def test_matching_tolerates_players_without_number_or_name():  # real B3 roster has playerNumberDisplay: null
+    roster = [{"playerId": 1, "playerNumberDisplay": None, "playerName": None, "isGoalie": False, "temp": False},
+              {"playerId": 2, "playerNumberDisplay": None, "playerName": None, "isGoalie": False, "temp": True},
+              sheet_player(3, "5", "R. Steckman")]
+    assert resolve_ours(roster, AhaPlayer("5", "R. Steckman")) == 3
+    assert find_our_temp(roster, AhaPlayer("", "A. Ledo")) is None
+    assert resolve_opponent(roster, AhaPlayer("5", "R. Steckman")) == 3
+    assert resolve_opponent(roster, AhaPlayer("7", "X. Nobody")) is None
