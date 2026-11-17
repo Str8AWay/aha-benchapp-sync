@@ -31,12 +31,14 @@ You need:
 
 It runs comfortably within the AWS free tier: one Lambda run a day, a small DynamoDB table, and an SNS topic.
 
-**1. Store the BenchApp login** in Secrets Manager. Leave the password out of your shell history by putting the JSON in a file you then delete:
+**1. Store the BenchApp login** as an encrypted SSM Parameter Store parameter. A standard parameter is free. Leave the password out of your shell history by putting the JSON in a file first:
 
 ```sh
-aws secretsmanager create-secret --name aha-benchapp/credentials \
-  --secret-string file://credentials.json   # {"email": "...", "password": "..."}
+aws ssm put-parameter --name /aha-benchapp/credentials --type SecureString \
+  --value file://credentials.json   # {"email": "...", "password": "..."}
 ```
+
+You can save that file as `~/.config/aha-benchapp/credentials.json`, which is also where local runs look for it. Otherwise, delete it.
 
 **2. Find your two team IDs.**
 - **AHA:** the AHA team ID is the number at the end of your team page's URL, for example `https://www.ahahockey.com/team/les-etoiles-du-nord-c1/308`.

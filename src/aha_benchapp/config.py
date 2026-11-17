@@ -1,4 +1,4 @@
-"""Settings from the environment, and the BenchApp login from Secrets Manager."""
+"""Settings from the environment, and the BenchApp login from SSM Parameter Store."""
 import json
 import os
 from collections.abc import Mapping
@@ -12,7 +12,7 @@ class Config:
     aha_team_url: str
     aha_team_id: int
     benchapp_team_id: int
-    secret_id: str | None
+    credentials_parameter: str | None
     state_table: str | None
     notify_topic_arn: str | None
     dry_run: bool
@@ -27,17 +27,17 @@ class Config:
             aha_team_url=url,
             aha_team_id=int(team_id),
             benchapp_team_id=int(_required(env, "BENCHAPP_TEAM_ID")),
-            secret_id=env.get("BENCHAPP_SECRET_ID") or None,
+            credentials_parameter=env.get("BENCHAPP_CREDENTIALS_PARAMETER") or None,
             state_table=env.get("STATE_TABLE") or None,
             notify_topic_arn=env.get("NOTIFY_TOPIC_ARN") or None,
             dry_run=env.get("DRY_RUN", "").strip().lower() in ("true", "1", "yes"),
         )
 
 
-def load_credentials(secret_id: str, client=None) -> tuple[str, str]:
-    client = client or boto3.client("secretsmanager")
-    secret = json.loads(client.get_secret_value(SecretId=secret_id)["SecretString"])
-    return secret["email"], secret["password"]
+def load_credentials(parameter: str, client=None) -> tuple[str, str]:
+    client = client or boto3.client("ssm")
+    stored = json.loads(client.get_parameter(Name=parameter, WithDecryption=True)["Parameter"]["Value"])
+    return stored["email"], stored["password"]
 
 
 def _required(env: Mapping[str, str], name: str) -> str:

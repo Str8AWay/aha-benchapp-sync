@@ -7,7 +7,7 @@ from aha_benchapp.models import GameResult, Status
 ENV = {
     "AHA_TEAM_URL": "https://www.ahahockey.com/team/les-etoiles-du-nord-c1/308",
     "BENCHAPP_TEAM_ID": "1247980",
-    "BENCHAPP_SECRET_ID": "aha-benchapp/credentials",
+    "BENCHAPP_CREDENTIALS_PARAMETER": "/aha-benchapp/credentials",
     "STATE_TABLE": "state",
     "NOTIFY_TOPIC_ARN": "arn:topic",
 }

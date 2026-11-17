@@ -10,10 +10,11 @@ Parameters:
   BenchAppTeamId:
     Type: Number
     Default: 1247980
-  SecretId:
+  CredentialsParameter:
     Type: String
-    Default: aha-benchapp/credentials
-    Description: Secrets Manager secret holding {"email", "password"} for the BenchApp manager account.
+    Default: /aha-benchapp/credentials
+    AllowedPattern: ^/.+
+    Description: SSM SecureString parameter holding {"email", "password"} for the BenchApp manager account.
   NotifyEmail:
     Type: String
     Description: Where to email games that need a look.
@@ -54,7 +55,7 @@ Resources:
         Variables:
           AHA_TEAM_URL: !Ref AhaTeamUrl
           BENCHAPP_TEAM_ID: !Ref BenchAppTeamId
-          BENCHAPP_SECRET_ID: !Ref SecretId
+          BENCHAPP_CREDENTIALS_PARAMETER: !Ref CredentialsParameter
           STATE_TABLE: !Ref StateTable
           NOTIFY_TOPIC_ARN: !Ref NotifyTopic
           DRY_RUN: !Ref DryRun
@@ -63,8 +64,10 @@ Resources:
             TableName: !Ref StateTable
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt NotifyTopic.TopicName
-        - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretId}-*
+        - Statement:  # the aws/ssm key's own policy allows decrypting through SSM
+            - Effect: Allow
+              Action: ssm:GetParameter
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CredentialsParameter}
       Events:
         Daily:
           Type: ScheduleV2
