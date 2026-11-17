@@ -22,6 +22,19 @@ Parameters:
     AllowedValues: ["true", "false"]
     Default: "true"
     Description: When true, BenchApp writes are logged instead of sent.
+  Schedule:
+    Type: String
+    Default: cron(0 8 * * ? *)
+    Description: When the daily run starts (EventBridge Scheduler expression).
+  ScheduleTimezone:
+    Type: String
+    Default: America/Chicago
+  ScheduleWindowMinutes:
+    Type: Number
+    Default: 60
+    MinValue: 1
+    MaxValue: 1440
+    Description: Each run starts at a random time this many minutes after Schedule, so teams don't all hit AHA and BenchApp at once.
 
 Resources:
   SyncFunction:
@@ -57,8 +70,11 @@ Resources:
           Type: ScheduleV2
           Properties:
             Name: !Sub ${AWS::StackName}-daily  # schedule names are account-wide; one stack per team
-            ScheduleExpression: cron(0 8 * * ? *)
-            ScheduleExpressionTimezone: America/Chicago
+            ScheduleExpression: !Ref Schedule
+            ScheduleExpressionTimezone: !Ref ScheduleTimezone
+            FlexibleTimeWindow:
+              Mode: FLEXIBLE
+              MaximumWindowInMinutes: !Ref ScheduleWindowMinutes
 
   SyncLogGroup:
     Type: AWS::Logs::LogGroup

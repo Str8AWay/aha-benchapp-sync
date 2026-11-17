@@ -74,7 +74,12 @@ Read the log in CloudWatch, in the stack's log group, and check that the games, 
 
 **6. Go live.** Set `DryRun = "false"`, then run `sam build && sam deploy` again.
 
-From then on, it runs every day at 8:00 a.m. Central. A game usually shows up in BenchApp the morning after it's posted on AHA.
+From then on, it runs once a day, starting at a random time between 8:00 and 9:00 a.m. Central. The random start keeps teams from all hitting AHA and BenchApp at the same moment. A game usually shows up in BenchApp the morning after it's posted on AHA.
+
+To change when it runs, set these in `parameter_overrides`:
+- `Schedule`: an [EventBridge Scheduler expression](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html), default `cron(0 8 * * ? *)`.
+- `ScheduleTimezone`: default `America/Chicago`.
+- `ScheduleWindowMinutes`: how far past `Schedule` the run can start, from 1 to 1440, default 60.
 
 The first live run enters every completed game that's still empty in BenchApp. Games you've already scored are skipped. A run enters at most 20 games, so a long season catches up over a few days.
 
